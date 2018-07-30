@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
     TextView songProgress, songDuration, songTitle;
     MediaPlayer mediaPlayer;
     Button play, stop, pause, forward, back;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        requestPermission();
 
         songDuration = findViewById(R.id.tvDuration);
         songProgress = findViewById(R.id.tvProgress);
@@ -77,15 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void getCurSongInfo(int song){
         MediaPlayer temp = MediaPlayer.create(this, song);
-        time = temp.getDuration();
         seekBar.setMax(temp.getDuration());
+        setTime(songDuration, temp.getDuration());
     }
 
     public void play(View view){
         if(mediaPlayer == null){
             mediaPlayer = MediaPlayer.create(this, song);
             mediaPlayer.seekTo(time);
-            setTime(songDuration, mediaPlayer.getDuration());
+
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -144,10 +149,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateSeekBar() {
-//        if(mediaPlayer==null) {
-//            mediaPlayer = MediaPlayer.create(this, R.raw.song1);
-//        }
-
         if (mediaPlayer != null) {
             seekBar.setProgress(mediaPlayer.getCurrentPosition());
             setTime(songProgress, mediaPlayer.getCurrentPosition());
@@ -171,6 +172,14 @@ public class MainActivity extends AppCompatActivity {
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
         );
         view.setText(update);
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(this, "Please allow Storage Permissions in App Setitngs", Toast.LENGTH_SHORT).show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSIONS_EXTERNAL_STORAGE);
+        }
     }
 
 }
