@@ -1,10 +1,12 @@
 package edu.utep.cs.cs4330.musicplayer;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
+    public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
     TextView songProgress, songDuration, songTitle;
     MediaPlayer mediaPlayer;
     Button songView, play, stop, pause, forward, back;
@@ -49,8 +51,20 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.btnStop);
         handler = new Handler();
 
-        performActions();
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (PERMISSIONS_EXTERNAL_STORAGE == requestCode) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                performActions();
+            } else {
+                Toast.makeText(this, "Storage Permissions Denied", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     public void performActions(){
