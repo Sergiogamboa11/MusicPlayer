@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.musicplayer;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
     TextView songProgress, songDuration, songTitle;
     MediaPlayer mediaPlayer;
-    Button play, stop, pause, forward, back;
+    Button songView, play, stop, pause, forward, back;
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
+        songView = findViewById(R.id.btnSongs);
         songDuration = findViewById(R.id.tvDuration);
         songProgress = findViewById(R.id.tvProgress);
         seekBar = findViewById(R.id.seekBar);
@@ -47,11 +49,18 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.btnStop);
         handler = new Handler();
 
+        performActions();
+
+    }
+
+    public void performActions(){
+
         play.setOnClickListener(this::play);
         stop.setOnClickListener(this::stop);
         pause.setOnClickListener(this::pause);
         back.setOnClickListener(this::seekBack);
         forward.setOnClickListener(this::seekFwd);
+        songView.setOnClickListener(this::showSongList);
 
         getCurSongInfo(R.raw.song1);
 
@@ -77,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     public void getCurSongInfo(int song){
@@ -108,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
         }
         mediaPlayer.start();
         updateSeekBar();
+    }
+
+    public void showSongList(View view){
+        Intent intent = new Intent(this, SongListActivity.class);
+        this.startActivity(intent);
     }
 
     public void pause(View view){
@@ -145,8 +158,6 @@ public class MainActivity extends AppCompatActivity {
         if(mediaPlayer!=null)
             mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()-5000);
     }
-
-
 
     private void updateSeekBar() {
         if (mediaPlayer != null) {
