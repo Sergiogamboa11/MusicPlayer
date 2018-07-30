@@ -3,12 +3,16 @@ package edu.utep.cs.cs4330.musicplayer;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
+    int time = 0;
+    int song = R.raw.song1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,19 +48,44 @@ public class MainActivity extends AppCompatActivity {
         back.setOnClickListener(this::seekBack);
         forward.setOnClickListener(this::seekFwd);
 
+        getCurSongInfo(R.raw.song1);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
+                Log.e("SEEKBAR PROGRESS", "is "+progress);
+                time=progress;
+                setTime(songProgress,time);
+                if(progressChanged && mediaPlayer!=null) {
+                    mediaPlayer.seekTo(time);
+                }
+//                        mediaPlayer.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+    }
+
+    public void getCurSongInfo(int song){
+        MediaPlayer temp = MediaPlayer.create(this, song);
+        time = temp.getDuration();
+        seekBar.setMax(temp.getDuration());
     }
 
     public void play(View view){
         if(mediaPlayer == null){
-            mediaPlayer = MediaPlayer.create(this, R.raw.song1);
-
-            int duration = mediaPlayer.getDuration();
-            String time = String.format("%02d:%02d",
-                    TimeUnit.MILLISECONDS.toMinutes(duration),
-                    TimeUnit.MILLISECONDS.toSeconds(duration) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
-            );
-            songDuration.setText(time);
+            mediaPlayer = MediaPlayer.create(this, song);
+            mediaPlayer.seekTo(time);
+            setTime(songDuration, mediaPlayer.getDuration());
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -68,23 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     release();
                 }
             });
-            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
-                    if(progressChanged)
-                        mediaPlayer.seekTo(progress);
-                }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                }
-            });
         }
         mediaPlayer.start();
         updateSeekBar();
@@ -97,7 +112,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void stop(View view){
         release();
+        time=0;
         seekBar.setProgress(0);
+        songProgress.setText("00:00");
     }
 
     public void release(){
@@ -127,18 +144,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateSeekBar() {
+//        if(mediaPlayer==null) {
+//            mediaPlayer = MediaPlayer.create(this, R.raw.song1);
+//        }
+
         if (mediaPlayer != null) {
             seekBar.setProgress(mediaPlayer.getCurrentPosition());
-
-            int duration = mediaPlayer.getCurrentPosition();
-            String time = String.format("%02d:%02d",
-                    TimeUnit.MILLISECONDS.toMinutes(duration),
-                    TimeUnit.MILLISECONDS.toSeconds(duration) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
-            );
-            songProgress.setText(time);
-
-
+            setTime(songProgress, mediaPlayer.getCurrentPosition());
             if (mediaPlayer.isPlaying()) {
                 runnable = new Runnable() {
                     @Override
@@ -146,8 +158,19 @@ public class MainActivity extends AppCompatActivity {
                         updateSeekBar();
                     }
                 };
-                handler.postDelayed(runnable, 1000);
+                handler.postDelayed(runnable, 100);
             }
         }
     }
+
+    private void setTime(TextView view, int time){
+        int duration = time;
+        String update = String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        );
+        view.setText(update);
+    }
+
 }
