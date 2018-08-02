@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,14 +33,26 @@ public class MainActivity extends AppCompatActivity {
     Runnable runnable;
     Handler handler;
     int time = 0;
-    int song = R.raw.song1;
+//    int song = R.raw.song1;
+    String datasource = "" ;
+    String filename = "content://media/external/audio/media/83";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         requestPermission();
+
+        Intent intent = getIntent();
+        String input = intent.getStringExtra("songName");
+        Log.e("NEW INTENT CONTENT","HEY: " + input);
+        if(null!=input){
+            filename = input;
+            Log.e("CHANGE SONG?","???????????????????????????????????????????");
+        }
 
         songView = findViewById(R.id.btnSongs);
         songDuration = findViewById(R.id.tvDuration);
@@ -81,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
-                Log.e("SEEKBAR PROGRESS", "is "+progress);
                 time=progress;
                 setTime(songProgress,time);
                 if(progressChanged && mediaPlayer!=null) {
@@ -110,8 +123,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void play(View view){
         if(mediaPlayer == null){
-            mediaPlayer = MediaPlayer.create(this, song);
+//            mediaPlayer = MediaPlayer.create(this, song);
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource( this, Uri.parse(filename));
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mediaPlayer.start();
             mediaPlayer.seekTo(time);
+
 
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
