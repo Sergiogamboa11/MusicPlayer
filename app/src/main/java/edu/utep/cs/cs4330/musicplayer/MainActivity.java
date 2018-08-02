@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,17 +43,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         requestPermission();
 
         Intent intent = getIntent();
-        String input = intent.getStringExtra("songName");
+        ArrayList<SongModel> songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
+        if(songList!=null)
+            Log.e("CHECK:" , songList.get(1).songName+" ???");
+
+/*        String input = intent.getStringExtra("songName");
         Log.e("NEW INTENT CONTENT","HEY: " + input);
         if(null!=input){
             filename = input;
-            Log.e("CHANGE SONG?","???????????????????????????????????????????");
-        }
+        }*/
 
         songView = findViewById(R.id.btnSongs);
         songDuration = findViewById(R.id.tvDuration);
