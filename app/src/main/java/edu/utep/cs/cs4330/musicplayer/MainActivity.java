@@ -47,8 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ArrayList<SongModel> songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
-        if(songList!=null)
-            Log.e("CHECK:" , songList.get(1).songName+" ???");
+        if(songList!=null) {
+//            Log.e("CHECK:", songList.get(1).songName + " ???");
+            int position = intent.getIntExtra("position", -1);
+//            Log.e("Position! ", pos+"??");
+            Log.e("Current song info!","Id: " + songList.get(position).songID + " Name: " + songList.get(position).songName);
+            filename = "content://media/external/audio/media/" + songList.get(position).songID;
+        }
 
 /*        String input = intent.getStringExtra("songName");
         Log.e("NEW INTENT CONTENT","HEY: " + input);
