@@ -31,7 +31,7 @@ public class SongListActivity extends AppCompatActivity {
 
         songView = (ListView) findViewById(R.id.songList);
         songArrayList = new ArrayList<SongModel>();
-        songColumns = new String[] { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.TITLE};
+        songColumns = new String[] { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM_ID};
 
         songCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songColumns, null, null, null);
         Log.e("THING","This: " + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -47,7 +47,9 @@ public class SongListActivity extends AppCompatActivity {
                         MediaStore.Audio.Media.ALBUM));
                 String name = songCursor.getString(songCursor.getColumnIndex(
                         MediaStore.Audio.Media.TITLE));
-                songArrayList.add(new SongModel(id, artist, album, name));
+                String albumID = songCursor.getString(songCursor.getColumnIndex(
+                        MediaStore.Audio.Media.ALBUM_ID));
+                songArrayList.add(new SongModel(id, artist, album, name, albumID));
             } while (songCursor.moveToNext());
         }
         songCursor.close();
@@ -59,7 +61,6 @@ public class SongListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(SongListActivity.this, MainActivity.class);
-
             /*    String songName = songList.get(position);
                 i.putExtra("songName", MediaStore.Audio.Media.EXTERNAL_CONTENT_URI+ "/"+songName);*/
                 i.putExtra("songList", songArrayList);

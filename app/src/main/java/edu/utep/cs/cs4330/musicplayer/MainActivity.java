@@ -27,15 +27,13 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
-    TextView songProgress, songDuration, songTitle;
+    TextView songProgress, songDuration, songName, songArtist;
     MediaPlayer mediaPlayer;
     Button songView, play, stop, pause, forward, back;
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
     int time = 0;
-//    int song = R.raw.song1;
-    String datasource = "" ;
     String filename = "content://media/external/audio/media/83";
 
     @Override
@@ -45,22 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
-        Intent intent = getIntent();
-        ArrayList<SongModel> songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
-        if(songList!=null) {
-//            Log.e("CHECK:", songList.get(1).songName + " ???");
-            int position = intent.getIntExtra("position", -1);
-//            Log.e("Position! ", pos+"??");
-            Log.e("Current song info!","Id: " + songList.get(position).songID + " Name: " + songList.get(position).songName);
-            filename = "content://media/external/audio/media/" + songList.get(position).songID;
-        }
-
-/*        String input = intent.getStringExtra("songName");
-        Log.e("NEW INTENT CONTENT","HEY: " + input);
-        if(null!=input){
-            filename = input;
-        }*/
-
+        songArtist = findViewById(R.id.textViewMain_artist);
+        songName = findViewById(R.id.textViewMain_song);
         songView = findViewById(R.id.btnSongs);
         songDuration = findViewById(R.id.tvDuration);
         songProgress = findViewById(R.id.tvProgress);
@@ -72,11 +56,35 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.btnStop);
         handler = new Handler();
 
+
+        checkForUpdate();
+
+
     }
 
+    public void checkForUpdate(){
+        Intent intent = getIntent();
+        ArrayList<SongModel> songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
+        if(songList!=null) {
+//            Log.e("CHECK:", songList.get(1).songName + " ???");
+            int position = intent.getIntExtra("position", -1);
+//            Log.e("Position! ", pos+"??");
+            Log.e("Current song info!","Id: " + songList.get(position).songID + " Name: " + songList.get(position).songName);
+            filename = "content://media/external/audio/media/" + songList.get(position).songID;
+            songName.setText(songList.get(position).songName);
+            songArtist.setText(songList.get(position).songArtist);
+        }
+    }
+
+
+    /**
+     * If storage permission granted, we go on. If not, we don't go on
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
         if (PERMISSIONS_EXTERNAL_STORAGE == requestCode) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 performActions();
@@ -88,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    /**
+     * Activates buttons, gets info for the current song
+     */
     public void performActions(){
 
         play.setOnClickListener(this::play);
@@ -97,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         forward.setOnClickListener(this::seekFwd);
         songView.setOnClickListener(this::showSongList);
 
-        getCurSongInfo(R.raw.song1);
+        getCurSongInfo(filename);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -122,8 +133,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getCurSongInfo(int song){
-        MediaPlayer temp = MediaPlayer.create(this, song);
+    /**
+     *
+     * @param uri
+     */
+    public void getCurSongInfo(String uri){
+        MediaPlayer temp = new MediaPlayer();
+            try {
+            temp.setDataSource(this, Uri.parse(filename));
+            temp.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.e("Duration?!?!?!?","Is: " + temp.getDuration());
         seekBar.setMax(temp.getDuration());
         setTime(songDuration, temp.getDuration());
     }
@@ -140,8 +162,6 @@ public class MainActivity extends AppCompatActivity {
             }
             mediaPlayer.start();
             mediaPlayer.seekTo(time);
-
-
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
