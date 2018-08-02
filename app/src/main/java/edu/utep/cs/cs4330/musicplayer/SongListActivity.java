@@ -31,7 +31,7 @@ public class SongListActivity extends AppCompatActivity {
 
         songView = (ListView) findViewById(R.id.songList);
         songArrayList = new ArrayList<SongModel>();
-        songColumns = new String[] { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM_ID};
+        songColumns = new String[] { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM_ID, MediaStore.Audio.Media.DURATION};
 
         songCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songColumns, null, null, null);
         Log.e("THING","This: " + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
@@ -49,7 +49,9 @@ public class SongListActivity extends AppCompatActivity {
                         MediaStore.Audio.Media.TITLE));
                 String albumID = songCursor.getString(songCursor.getColumnIndex(
                         MediaStore.Audio.Media.ALBUM_ID));
-                songArrayList.add(new SongModel(id, artist, album, name, albumID));
+                long duration = songCursor.getLong(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
+
+                songArrayList.add(new SongModel(id, artist, album, name, albumID,duration));
             } while (songCursor.moveToNext());
         }
         songCursor.close();

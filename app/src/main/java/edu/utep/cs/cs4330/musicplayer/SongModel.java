@@ -10,13 +10,15 @@ public class SongModel implements Parcelable{
     String songAlbum;
     String songName;
     String songAlbumID;
+    long songLength;
 
-    SongModel(String id, String artist, String album, String name, String albumID){
+    SongModel(String id, String artist, String album, String name, String albumID, long length){
         songID = id;
         songArtist = artist;
         songAlbum = album;
         songName = name;
         songAlbumID =albumID;
+        songLength = length;
     }
 
     protected SongModel(Parcel in) {
@@ -25,6 +27,7 @@ public class SongModel implements Parcelable{
         songAlbum = in.readString();
         songName = in.readString();
         songAlbumID = in.readString();
+        songLength = in.readLong();
     }
 
     public static final Creator<SongModel> CREATOR = new Creator<SongModel>() {
@@ -57,6 +60,8 @@ public class SongModel implements Parcelable{
 
     public void setSongAlbumID(String songAlbumID){this.songAlbumID = songAlbumID; }
 
+    public void setSongLength(long songLength){this.songLength = songLength; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -69,5 +74,6 @@ public class SongModel implements Parcelable{
         dest.writeString(songAlbum);
         dest.writeString(songName);
         dest.writeString(songAlbumID);
+        dest.writeLong(songLength);
     }
 }

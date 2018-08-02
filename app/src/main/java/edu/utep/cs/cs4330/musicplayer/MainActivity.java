@@ -3,10 +3,8 @@ package edu.utep.cs.cs4330.musicplayer;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +16,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +31,11 @@ public class MainActivity extends AppCompatActivity {
     Runnable runnable;
     Handler handler;
     int time = 0;
-    String filename = "content://media/external/audio/media/83";
+    ArrayList<SongModel> songList;
+    String SONG_URI = "content://media/external/audio/media/83";
+    int CURRENT_POSITION = -1 ;
+    long SONG_DURATION = -1;
+    boolean PLAY = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +58,50 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler();
 
 
-        checkForUpdate();
+        checkForUpdates();
 
 
     }
 
-    public void checkForUpdate(){
+    public void checkForUpdates(){
         Intent intent = getIntent();
-        ArrayList<SongModel> songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
+        songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
         if(songList!=null) {
 //            Log.e("CHECK:", songList.get(1).songName + " ???");
-            int position = intent.getIntExtra("position", -1);
+            CURRENT_POSITION = intent.getIntExtra("position", -1);
+            SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
 //            Log.e("Position! ", pos+"??");
-            Log.e("Current song info!","Id: " + songList.get(position).songID + " Name: " + songList.get(position).songName);
-            filename = "content://media/external/audio/media/" + songList.get(position).songID;
-            songName.setText(songList.get(position).songName);
-            songArtist.setText(songList.get(position).songArtist);
+            Log.e("Current song info!","Id: " + songList.get(CURRENT_POSITION).songID + " Name: " + songList.get(CURRENT_POSITION).songName);
+            SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
+            updateDisplay();
         }
     }
 
+    /**
+     * Gets information of the current song
+     * @param
+     */
+    public void getCurSongInfo(){
+       /* MediaPlayer temp = new MediaPlayer();
+        try {
+            temp.setDataSource(this, Uri.parse(SONG_URI));
+            temp.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+//        Log.e("Duration?!?!?!?","Is: " + temp.getDuration());
+        seekBar.setMax((int) SONG_DURATION);
+        setTime(songDuration, (int) SONG_DURATION);
+    }
+
+    /**
+     * Updates activity to show song information
+     */
+    public void updateDisplay(){
+        songName.setText(songList.get(CURRENT_POSITION).songName);
+        songArtist.setText(songList.get(CURRENT_POSITION).songArtist);
+//        setTime(songDuration, (int)SONG_DURATION);
+    }
 
     /**
      * If storage permission granted, we go on. If not, we don't go on
@@ -104,11 +130,11 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(this::play);
         stop.setOnClickListener(this::stop);
         pause.setOnClickListener(this::pause);
-        back.setOnClickListener(this::seekBack);
-        forward.setOnClickListener(this::seekFwd);
+        back.setOnClickListener(this::skipBack);
+        forward.setOnClickListener(this::skipForward);
         songView.setOnClickListener(this::showSongList);
 
-        getCurSongInfo(filename);
+        getCurSongInfo();
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -123,39 +149,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
     }
 
-    /**
-     *
-     * @param uri
-     */
-    public void getCurSongInfo(String uri){
-        MediaPlayer temp = new MediaPlayer();
-            try {
-            temp.setDataSource(this, Uri.parse(filename));
-            temp.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.e("Duration?!?!?!?","Is: " + temp.getDuration());
-        seekBar.setMax(temp.getDuration());
-        setTime(songDuration, temp.getDuration());
-    }
+
 
     public void play(View view){
         if(mediaPlayer == null){
 //            mediaPlayer = MediaPlayer.create(this, song);
             mediaPlayer = new MediaPlayer();
             try {
-                mediaPlayer.setDataSource( this, Uri.parse(filename));
+                mediaPlayer.setDataSource( this, Uri.parse(SONG_URI));
                 mediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -211,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
         release();
     }
 
-    public void seekFwd(View view){
+/*    public void seekFwd(View view){
         if(mediaPlayer!=null)
             mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()+5000);
     }
@@ -220,6 +229,39 @@ public class MainActivity extends AppCompatActivity {
     public void seekBack(View view){
         if(mediaPlayer!=null)
             mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()-5000);
+    }*/
+
+
+    public void skipForward(View view){
+        if(songList!=null && CURRENT_POSITION != -1){
+            if(CURRENT_POSITION == songList.size()-1){
+                CURRENT_POSITION = 0;
+            }
+            else
+                CURRENT_POSITION++;
+            stop(view);
+            SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
+            SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
+            getCurSongInfo(); // delete this later
+            updateDisplay();
+            play(view);
+        }
+    }
+
+    public void skipBack(View view){
+        if(songList!=null && CURRENT_POSITION!=-1){
+            if(CURRENT_POSITION == 0){
+                CURRENT_POSITION = songList.size()-1;
+            }
+            else
+                CURRENT_POSITION--;
+            stop(view);
+            SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
+            SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
+            getCurSongInfo(); // delete this later
+            updateDisplay();
+            play(view);
+        }
     }
 
     private void updateSeekBar() {
@@ -239,11 +281,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setTime(TextView view, int time){
-        int duration = time;
-        String update = String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(duration),
-                TimeUnit.MILLISECONDS.toSeconds(duration) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        String update = String.format(Locale.US, "%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(time),
+                TimeUnit.MILLISECONDS.toSeconds(time) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time))
         );
         view.setText(update);
     }
