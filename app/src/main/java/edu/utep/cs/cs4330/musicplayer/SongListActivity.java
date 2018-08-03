@@ -67,6 +67,7 @@ public class SongListActivity extends AppCompatActivity {
                 i.putExtra("songName", MediaStore.Audio.Media.EXTERNAL_CONTENT_URI+ "/"+songName);*/
                 i.putExtra("songList", songArrayList);
                 i.putExtra("position", position);
+//                i.putExtra("playing", true);
 
                 SongListActivity.this.startActivity(i);
             }

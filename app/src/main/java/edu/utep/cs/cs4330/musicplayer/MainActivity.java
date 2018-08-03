@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     String SONG_URI = "content://media/external/audio/media/83";
     int CURRENT_POSITION = -1 ;
     long SONG_DURATION = -1;
-    boolean PLAY = false;
+    boolean PLAYING = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Current song info!","Id: " + songList.get(CURRENT_POSITION).songID + " Name: " + songList.get(CURRENT_POSITION).songName);
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             updateDisplay();
+            play(play);  //this WILL cause bigs later
         }
     }
 
@@ -170,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             mediaPlayer.start();
+            PLAYING = true;
             mediaPlayer.seekTo(time);
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -198,10 +200,12 @@ public class MainActivity extends AppCompatActivity {
     public void pause(View view){
         if(mediaPlayer != null)
             mediaPlayer.pause();
+        PLAYING = false;
     }
 
     public void stop(View view){
         release();
+        PLAYING = false;
         time=0;
         seekBar.setProgress(0);
         songProgress.setText("00:00");
@@ -220,18 +224,6 @@ public class MainActivity extends AppCompatActivity {
         release();
     }
 
-/*    public void seekFwd(View view){
-        if(mediaPlayer!=null)
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()+5000);
-    }
-
-
-    public void seekBack(View view){
-        if(mediaPlayer!=null)
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition()-5000);
-    }*/
-
-
     public void skipForward(View view){
         if(songList!=null && CURRENT_POSITION != -1){
             if(CURRENT_POSITION == songList.size()-1){
@@ -239,12 +231,15 @@ public class MainActivity extends AppCompatActivity {
             }
             else
                 CURRENT_POSITION++;
+            boolean temp = PLAYING;
             stop(view);
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
-            play(view);
+            if(temp)
+                play(view);
+
         }
     }
 
@@ -255,12 +250,14 @@ public class MainActivity extends AppCompatActivity {
             }
             else
                 CURRENT_POSITION--;
+            boolean temp = PLAYING;
             stop(view);
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
-            play(view);
+            if(temp)
+                play(view);
         }
     }
 
