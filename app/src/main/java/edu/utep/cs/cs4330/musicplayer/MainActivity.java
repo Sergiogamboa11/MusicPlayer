@@ -12,9 +12,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
+    ImageView albumArt;
     TextView songProgress, songDuration, songName, songArtist;
     MediaPlayer mediaPlayer;
     Button songView, play, stop, pause, forward, back;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
+        albumArt = findViewById(R.id.imageViewMain_AlbumArt);
         songArtist = findViewById(R.id.textViewMain_artist);
         songName = findViewById(R.id.textViewMain_song);
         songView = findViewById(R.id.btnSongs);
@@ -57,9 +62,7 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.btnStop);
         handler = new Handler();
 
-
         checkForUpdates();
-
 
     }
 
@@ -101,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
     public void updateDisplay(){
         songName.setText(songList.get(CURRENT_POSITION).songName);
         songArtist.setText(songList.get(CURRENT_POSITION).songArtist);
+        if(songList.get(CURRENT_POSITION).albumArt!=null) {
+            Glide.with(this).load(songList.get(CURRENT_POSITION).albumArt).into(albumArt);
+        }
+        Log.e("ERROR?", "adasdf " + songList.get(CURRENT_POSITION).albumArt);
+
 //        setTime(songDuration, (int)SONG_DURATION);
     }
 

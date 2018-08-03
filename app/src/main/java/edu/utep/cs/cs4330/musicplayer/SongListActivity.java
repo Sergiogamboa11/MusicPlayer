@@ -3,15 +3,14 @@ package edu.utep.cs.cs4330.musicplayer;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,8 +31,8 @@ public class SongListActivity extends AppCompatActivity {
         songView = (ListView) findViewById(R.id.songList);
         songArrayList = new ArrayList<SongModel>();
         songColumns = new String[] { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM_ID, MediaStore.Audio.Media.DURATION};
-
-        songCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songColumns, null, null, null);
+        String where = MediaStore.Audio.Media.IS_MUSIC + "=1";
+        songCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songColumns, where, null, null);
         Log.e("THING","This: " + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 
 
@@ -51,13 +50,17 @@ public class SongListActivity extends AppCompatActivity {
                         MediaStore.Audio.Media.ALBUM_ID));
                 long duration = songCursor.getLong(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
 
-                songArrayList.add(new SongModel(id, artist, album, name, albumID,duration));
+//                String art = getAlbumArt(this, Long.parseLong(albumID));
+                String art = getAlbumUri(this, albumID).toString();
+//                Uri image = Uri.parse(art);
+//                Log.e("ERROR??" , "HERE? " + art);
+
+                songArrayList.add(new SongModel(id, artist, album, name, albumID, duration, art));
             } while (songCursor.moveToNext());
         }
         songCursor.close();
         SongListAdapter adapter = new SongListAdapter(this, songArrayList);
         songView.setAdapter(adapter);
-
 
         songView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,6 +75,35 @@ public class SongListActivity extends AppCompatActivity {
                 SongListActivity.this.startActivity(i);
             }
         });
+
+    }
+
+
+    private static String getAlbumArt(Context context, long albumID) {
+        String path = null;
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{Long.toString(albumID)},
+                null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                path = c.getString(0);
+            }
+            c.close();
+        }
+        return path;
+    }
+
+
+    public Uri getAlbumUri(Context mContext, String album_id){
+        if(mContext!=null) {
+            Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+            Uri imageUri = Uri.withAppendedPath(sArtworkUri, String.valueOf(album_id));
+            return imageUri;
+        }
+        return null;
 
     }
 
