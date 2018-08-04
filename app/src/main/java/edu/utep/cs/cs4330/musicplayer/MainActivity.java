@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setNavigationViewListner();
 
-
-
         albumArt = findViewById(R.id.imageViewMain_AlbumArt);
         songArtist = findViewById(R.id.textViewMain_artist);
         songName = findViewById(R.id.textViewMain_song);
@@ -84,9 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         seekBar = findViewById(R.id.seekBar);
         back = findViewById(R.id.btnBack);
         imgPlay = findViewById(R.id.imageButtonPlay);
-//        play = findViewById(R.id.btnPlay);
         forward = findViewById(R.id.btnFwd);
-//        pause = findViewById(R.id.btnPause);
         handler = new Handler();
 
 

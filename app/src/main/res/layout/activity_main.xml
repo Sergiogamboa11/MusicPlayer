@@ -14,6 +14,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#3e3e3e"
         tools:context=".MainActivity">
 
         <TextView
@@ -21,6 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Artist"
+            android:textColor="@android:color/white"
             android:textSize="16dp"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -32,6 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Song"
+            android:textColor="@android:color/white"
             android:textSize="14dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -39,15 +42,20 @@
 
         <ImageView
             android:id="@+id/imageViewMain_AlbumArt"
-            android:layout_width="362dp"
-            android:layout_height="362dp"
-            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/black"
             app:layout_constraintBottom_toTopOf="@+id/seekBar"
+            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.484"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@android:drawable/ic_media_play" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewMain_song"
+            app:srcCompat="@mipmap/generic_cd" />
 
         <TextView
             android:id="@+id/tvProgress"
@@ -56,6 +64,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:text="00:00"
+            android:textColor="@android:color/white"
             app:layout_constraintBottom_toTopOf="@+id/seekBar"
             app:layout_constraintStart_toStartOf="@+id/seekBar" />
 
@@ -66,6 +75,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="00:00"
+            android:textColor="@android:color/white"
             app:layout_constraintBottom_toTopOf="@+id/seekBar"
             app:layout_constraintEnd_toEndOf="@+id/seekBar" />
 
@@ -77,6 +87,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@android:color/background_light"
             app:layout_constraintBottom_toTopOf="@+id/imageButtonPlay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -91,6 +102,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:background="@drawable/round_play_circle_outline_24"
+            android:backgroundTint="@android:color/background_light"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -112,7 +124,9 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/seekBar"
-            app:srcCompat="@mipmap/round_skip_previous_black_48" />
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@mipmap/round_skip_previous_black_48"
+            tools:backgroundTint="@android:color/background_light" />
 
         <ImageButton
             android:id="@+id/btnFwd"
@@ -123,6 +137,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/round_skip_next_24"
+            android:backgroundTint="@android:color/background_light"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
