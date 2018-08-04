@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageView albumArt;
     TextView songProgress, songDuration, songName, songArtist;
     MediaPlayer mediaPlayer;
-    Button songView, play, stop, pause, forward, back;
+    ImageButton imgPlay, forward, back;
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
@@ -78,15 +79,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         albumArt = findViewById(R.id.imageViewMain_AlbumArt);
         songArtist = findViewById(R.id.textViewMain_artist);
         songName = findViewById(R.id.textViewMain_song);
-        songView = findViewById(R.id.btnSongs);
         songDuration = findViewById(R.id.tvDuration);
         songProgress = findViewById(R.id.tvProgress);
         seekBar = findViewById(R.id.seekBar);
         back = findViewById(R.id.btnBack);
-        play = findViewById(R.id.btnPlay);
+        imgPlay = findViewById(R.id.imageButtonPlay);
+//        play = findViewById(R.id.btnPlay);
         forward = findViewById(R.id.btnFwd);
-        pause = findViewById(R.id.btnPause);
-        stop = findViewById(R.id.btnStop);
+//        pause = findViewById(R.id.btnPause);
         handler = new Handler();
 
 
@@ -96,9 +96,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         checkForUpdates();
 
-
-
     }
+
+
+    public void startClick(View view){
+        if(!PLAYING) {
+            PLAYING = true;
+            play(imgPlay);
+        }
+        else {
+
+            PLAYING = false;
+            pause(imgPlay);
+        }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -147,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        stop(stop);
-                        play(play);
+                        stop();
+                        play(imgPlay);
                     }
                 }, 250);
             }
@@ -209,12 +221,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public void performActions(){
 
-        play.setOnClickListener(this::play);
-        stop.setOnClickListener(this::stop);
-        pause.setOnClickListener(this::pause);
+        imgPlay.setOnClickListener(this::startClick);
+//        pause.setOnClickListener(this::pause);
         back.setOnClickListener(this::skipBack);
         forward.setOnClickListener(this::skipForward);
-//        songView.setOnClickListener(this::showSongList);
 
         getCurSongInfo();
 
@@ -228,7 +238,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 //                        mediaPlayer.seekTo(progress);
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
@@ -240,40 +249,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-/*    public void play(View view){
-        if(mediaPlayer == null){
-//            mediaPlayer = MediaPlayer.create(this, song);
-            mediaPlayer = new MediaPlayer();
-            try {
-                mediaPlayer.setDataSource( this, Uri.parse(SONG_URI));
-                mediaPlayer.prepare();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mediaPlayer.start();
-            PLAYING = true;
-            mediaPlayer.seekTo(time);
-
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    seekBar.setMax(mediaPlayer.getDuration());
-                }
-            });
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    release();
-                }
-            });
-
-        }
-        mediaPlayer.start();
-        updateSeekBar();
-    }*/
-
     public void play(View view){
+        imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
+        imgPlay.setImageResource(R.mipmap.round_pause_circle_outline_black_48);
         songService.play(time, SONG_URI, seekBar);
         PLAYING = true;
         updateSeekBar();
@@ -285,11 +263,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void pause(View view){
+        imgPlay.setBackgroundResource(R.drawable.round_play_circle_outline_24);
+        imgPlay.setImageResource(R.mipmap.round_play_circle_outline_black_48);
         songService.pause();
         PLAYING = false;
     }
 
-    public void stop(View view){
+    public void stop(){
         songService.stop();
         PLAYING = false;
         time=0;
@@ -318,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else
                 CURRENT_POSITION++;
             boolean temp = PLAYING;
-            stop(view);
+            stop();
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
@@ -336,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             else
                 CURRENT_POSITION--;
             boolean temp = PLAYING;
-            stop(view);
+            stop();
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
