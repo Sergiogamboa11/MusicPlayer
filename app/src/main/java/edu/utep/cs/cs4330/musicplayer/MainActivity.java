@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
     ImageView albumArt;
-    TextView songProgress, songDuration, songName, songArtist;
+    TextView songProgress, songDuration, songName, songArtist, songAlbum;
     MediaPlayer mediaPlayer;
     ImageButton imgPlay, forward, back;
     SeekBar seekBar;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setNavigationViewListner();
 
+        songAlbum = findViewById(R.id.textViewMain_album);
         albumArt = findViewById(R.id.imageViewMain_AlbumArt);
         songArtist = findViewById(R.id.textViewMain_artist);
         songName = findViewById(R.id.textViewMain_song);
@@ -84,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imgPlay = findViewById(R.id.imageButtonPlay);
         forward = findViewById(R.id.btnFwd);
         handler = new Handler();
-
-
 
         Intent serviceIntent = new Intent(this, SongService.class);
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             play(imgPlay);
         }
         else {
-
             PLAYING = false;
             pause(imgPlay);
         }
@@ -138,18 +137,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent intent = getIntent();
         songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
-//        songService.onBind(serviceIntent);
-
         if(songList!=null) {
-//            stop();
-//            Log.e("CHECK:", songList.get(1).songName + " ???");
             CURRENT_POSITION = intent.getIntExtra("position", -1);
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
-//            Log.e("Position! ", pos+"??");
-            Log.e("Current song info!","Id: " + songList.get(CURRENT_POSITION).songID + " Name: " + songList.get(CURRENT_POSITION).songName);
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             updateDisplay();
-//            play(play);  //this WILL cause bugs later
             NEW_SONG = true;
             if(NEW_SONG) {
                 new Handler().postDelayed(new Runnable() {
@@ -168,14 +160,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * @param
      */
     public void getCurSongInfo(){
-       /* MediaPlayer temp = new MediaPlayer();
-        try {
-            temp.setDataSource(this, Uri.parse(SONG_URI));
-            temp.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-//        Log.e("Duration?!?!?!?","Is: " + temp.getDuration());
         seekBar.setMax((int) SONG_DURATION);
         setTime(songDuration, (int) SONG_DURATION);
     }
@@ -186,11 +170,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void updateDisplay(){
         songName.setText(songList.get(CURRENT_POSITION).songName);
         songArtist.setText(songList.get(CURRENT_POSITION).songArtist);
-        if(songList.get(CURRENT_POSITION).albumArt!=null) {
+        songAlbum.setText(songList.get(CURRENT_POSITION).songAlbum);
+        if(Uri.parse(songList.get(CURRENT_POSITION).albumArt)!=null  && Uri.parse(songList.get(CURRENT_POSITION).albumArt).equals(Uri.EMPTY)) {
             Glide.with(this).load(songList.get(CURRENT_POSITION).albumArt).into(albumArt);
         }
 
-//        setTime(songDuration, (int)SONG_DURATION);
+//        if(albumArt.getDrawable() == null)
+        else
+            albumArt.setImageResource(R.mipmap.generic_cd);
+//        Log.e("ALBUM ART", "this " + Uri.parse(songList.get(CURRENT_POSITION).albumArt));
+
     }
 
     /**
@@ -251,6 +240,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songService.play(time, SONG_URI, seekBar);
         PLAYING = true;
         updateSeekBar();
+        songService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                skipForward(forward);
+            }
+        });
     }
 
     public void showSongList(View view){

@@ -33,7 +33,6 @@ public class SongService extends Service {
 
     public void play(int time, String SONG_URI, SeekBar seekBar){
         if(mediaPlayer == null){
-//            mediaPlayer = MediaPlayer.create(this, song);
             mediaPlayer = new MediaPlayer();
             try {
                 mediaPlayer.setDataSource( this, Uri.parse(SONG_URI));
@@ -42,7 +41,6 @@ public class SongService extends Service {
                 e.printStackTrace();
             }
             mediaPlayer.start();
-//            PLAYING = true;
             mediaPlayer.seekTo(time);
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -54,7 +52,6 @@ public class SongService extends Service {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-//                    release();
                 }
             });
 
