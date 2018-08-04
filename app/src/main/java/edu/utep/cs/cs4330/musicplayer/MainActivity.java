@@ -10,10 +10,14 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,8 +32,11 @@ import java.util.concurrent.TimeUnit;
 
 import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
+
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
 
     SongService songService;
     boolean isBound = false;
@@ -59,6 +66,15 @@ public class MainActivity extends AppCompatActivity {
 
         requestPermission();
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setNavigationViewListner();
+
+
+
         albumArt = findViewById(R.id.imageViewMain_AlbumArt);
         songArtist = findViewById(R.id.textViewMain_artist);
         songName = findViewById(R.id.textViewMain_song);
@@ -82,6 +98,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(toggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -190,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         pause.setOnClickListener(this::pause);
         back.setOnClickListener(this::skipBack);
         forward.setOnClickListener(this::skipForward);
-        songView.setOnClickListener(this::showSongList);
+//        songView.setOnClickListener(this::showSongList);
 
         getCurSongInfo();
 
@@ -355,4 +379,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setNavigationViewListner() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.song_list: {
+                Intent intent = new Intent(this, SongListActivity.class);
+                this.startActivity(intent);
+            }
+        }
+        return false;
+    }
 }
