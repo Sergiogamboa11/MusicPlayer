@@ -1,10 +1,14 @@
 package edu.utep.cs.cs4330.musicplayer;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,15 +20,19 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
+
 public class MainActivity extends AppCompatActivity {
+
+
+    SongService songService;
+    boolean isBound = false;
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
     ImageView albumArt;
@@ -40,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     int CURRENT_POSITION = -1 ;
     long SONG_DURATION = -1;
     boolean PLAYING = false;
+    boolean NEW_SONG = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +73,43 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.btnStop);
         handler = new Handler();
 
+
+
+        Intent serviceIntent = new Intent(this, SongService.class);
+        bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
+
         checkForUpdates();
+
+
 
     }
 
+    /**
+     * Service!
+     */
+    private ServiceConnection myConntection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MyLocalBinder binder = (MyLocalBinder) service;
+            songService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
+    };
+
+
     public void checkForUpdates(){
+
         Intent intent = getIntent();
         songList = (ArrayList<SongModel>)getIntent().getSerializableExtra("songList");
+//        songService.onBind(serviceIntent);
+
         if(songList!=null) {
+//            stop();
 //            Log.e("CHECK:", songList.get(1).songName + " ???");
             CURRENT_POSITION = intent.getIntExtra("position", -1);
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
@@ -77,7 +117,17 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Current song info!","Id: " + songList.get(CURRENT_POSITION).songID + " Name: " + songList.get(CURRENT_POSITION).songName);
             SONG_URI = "content://media/external/audio/media/" + songList.get(CURRENT_POSITION).songID;
             updateDisplay();
-            play(play);  //this WILL cause bigs later
+//            play(play);  //this WILL cause bugs later
+            NEW_SONG = true;
+            if(NEW_SONG) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        stop(stop);
+                        play(play);
+                    }
+                }, 250);
+            }
         }
     }
 
@@ -107,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
         if(songList.get(CURRENT_POSITION).albumArt!=null) {
             Glide.with(this).load(songList.get(CURRENT_POSITION).albumArt).into(albumArt);
         }
-        Log.e("ERROR?", "adasdf " + songList.get(CURRENT_POSITION).albumArt);
 
 //        setTime(songDuration, (int)SONG_DURATION);
     }
@@ -150,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
                 time=progress;
                 setTime(songProgress,time);
-                if(progressChanged && mediaPlayer!=null) {
-                    mediaPlayer.seekTo(time);
+                if(progressChanged && songService.mediaPlayer!=null) {
+                    songService.mediaPlayer.seekTo(time);
                 }
 //                        mediaPlayer.seekTo(progress);
             }
@@ -168,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void play(View view){
+/*    public void play(View view){
         if(mediaPlayer == null){
 //            mediaPlayer = MediaPlayer.create(this, song);
             mediaPlayer = new MediaPlayer();
@@ -198,6 +247,12 @@ public class MainActivity extends AppCompatActivity {
         }
         mediaPlayer.start();
         updateSeekBar();
+    }*/
+
+    public void play(View view){
+        songService.play(time, SONG_URI, seekBar);
+        PLAYING = true;
+        updateSeekBar();
     }
 
     public void showSongList(View view){
@@ -206,13 +261,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void pause(View view){
-        if(mediaPlayer != null)
-            mediaPlayer.pause();
+        songService.pause();
         PLAYING = false;
     }
 
     public void stop(View view){
-        release();
+        songService.stop();
         PLAYING = false;
         time=0;
         seekBar.setProgress(0);
@@ -247,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
             updateDisplay();
             if(temp)
                 play(view);
-
         }
     }
 
@@ -270,10 +323,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSeekBar() {
-        if (mediaPlayer != null) {
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
-            setTime(songProgress, mediaPlayer.getCurrentPosition());
-            if (mediaPlayer.isPlaying()) {
+        if (songService.mediaPlayer != null) {
+            seekBar.setProgress(songService.mediaPlayer.getCurrentPosition());
+            setTime(songProgress, songService.mediaPlayer.getCurrentPosition());
+            if (songService.mediaPlayer.isPlaying()) {
                 runnable = new Runnable() {
                     @Override
                     public void run() {
