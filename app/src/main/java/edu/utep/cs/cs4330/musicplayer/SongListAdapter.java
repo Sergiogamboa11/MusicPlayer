@@ -47,6 +47,8 @@ public class SongListAdapter extends ArrayAdapter<SongModel> {
         if(albumArt!=null) {
             Glide.with(getContext()).load(albumArt).into(artImage);
         }
+        else
+            Glide.with(getContext()).load(R.mipmap.generic_cd).into(artImage);
         return view;
     }
 

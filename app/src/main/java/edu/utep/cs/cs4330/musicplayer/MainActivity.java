@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.musicplayer;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SongService songService;
     boolean isBound = false;
 
-    public static final int PERMISSIONS_EXTERNAL_STORAGE = 1;
+    public static final int PERMISSIONS_EXTERNAL_STORAGE = 0;
     ImageView albumArt;
     TextView songProgress, songDuration, songName, songArtist, songAlbum;
     MediaPlayer mediaPlayer;
@@ -171,15 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songName.setText(songList.get(CURRENT_POSITION).songName);
         songArtist.setText(songList.get(CURRENT_POSITION).songArtist);
         songAlbum.setText(songList.get(CURRENT_POSITION).songAlbum);
-        if(Uri.parse(songList.get(CURRENT_POSITION).albumArt)!=null  && Uri.parse(songList.get(CURRENT_POSITION).albumArt).equals(Uri.EMPTY)) {
-            Glide.with(this).load(songList.get(CURRENT_POSITION).albumArt).into(albumArt);
-        }
-
-//        if(albumArt.getDrawable() == null)
-        else
-            albumArt.setImageResource(R.mipmap.generic_cd);
-//        Log.e("ALBUM ART", "this " + Uri.parse(songList.get(CURRENT_POSITION).albumArt));
-
+        Glide.with(this).load(songList.get(CURRENT_POSITION).albumArt).apply(new RequestOptions().placeholder(R.mipmap.generic_cd)).into(albumArt);
     }
 
     /**
@@ -207,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void performActions(){
 
         imgPlay.setOnClickListener(this::startClick);
-//        pause.setOnClickListener(this::pause);
         back.setOnClickListener(this::skipBack);
         forward.setOnClickListener(this::skipForward);
 
@@ -359,8 +354,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.song_list: {
-                Intent intent = new Intent(this, SongListActivity.class);
-                this.startActivity(intent);
+                if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(this, SongListActivity.class);
+                    this.startActivity(intent);
+                }
+                else
+                    Toast.makeText(this, "Storage Permissions Required", Toast.LENGTH_SHORT);
+                Log.e("STORAGE ???",": " + PERMISSIONS_EXTERNAL_STORAGE);
             }
         }
         return false;

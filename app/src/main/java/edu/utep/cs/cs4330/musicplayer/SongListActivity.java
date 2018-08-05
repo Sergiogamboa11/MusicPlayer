@@ -50,10 +50,7 @@ public class SongListActivity extends AppCompatActivity {
                         MediaStore.Audio.Media.ALBUM_ID));
                 long duration = songCursor.getLong(songCursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
 
-//                String art = getAlbumArt(this, Long.parseLong(albumID));
                 String art = getAlbumUri(this, albumID).toString();
-//                Uri image = Uri.parse(art);
-//                Log.e("ERROR??" , "HERE? " + art);
 
                 songArrayList.add(new SongModel(id, artist, album, name, albumID, duration, art));
             } while (songCursor.moveToNext());
@@ -66,12 +63,8 @@ public class SongListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(SongListActivity.this, MainActivity.class);
-            /*    String songName = songList.get(position);
-                i.putExtra("songName", MediaStore.Audio.Media.EXTERNAL_CONTENT_URI+ "/"+songName);*/
                 i.putExtra("songList", songArrayList);
                 i.putExtra("position", position);
-//                i.putExtra("playing", true);
-
                 SongListActivity.this.startActivity(i);
             }
         });
