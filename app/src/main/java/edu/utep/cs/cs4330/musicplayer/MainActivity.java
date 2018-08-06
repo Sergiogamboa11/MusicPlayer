@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void play(View view){
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
-        imgPlay.setImageResource(R.mipmap.round_pause_circle_outline_black_48);
+        imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
         songService.play(time, SONG_URI, seekBar);
         PLAYING = true;
         updateSeekBar();
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void pause(View view){
         imgPlay.setBackgroundResource(R.drawable.round_play_circle_outline_24);
-        imgPlay.setImageResource(R.mipmap.round_play_circle_outline_black_48);
+        imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
         songService.pause();
         PLAYING = false;
     }
