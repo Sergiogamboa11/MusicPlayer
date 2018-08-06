@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,11 +45,7 @@ public class SongListAdapter extends ArrayAdapter<SongModel> {
         artistText.setText(songArtist);
         albumText.setText(songAlbum);
         songText.setText(songName);
-        if(albumArt!=null) {
-            Glide.with(getContext()).load(albumArt).into(artImage);
-        }
-        else
-            Glide.with(getContext()).load(R.mipmap.generic_cd).into(artImage);
+        Glide.with(getContext()).load(albumArt).apply(new RequestOptions().placeholder(R.mipmap.generic_cd)).into(artImage);
         return view;
     }
 

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -20,22 +19,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
 import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -57,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Handler handler;
     int time = 0;
     ArrayList<SongModel> songList;
-    String SONG_URI = "content://media/external/audio/media/83";
+    String SONG_URI = "";
     int CURRENT_POSITION = -1 ;
     long SONG_DURATION = -1;
     boolean PLAYING = false;
@@ -213,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
                 time=progress;
                 setTime(songProgress,time);
+                if(time<=0)
+                    songProgress.setText("00:00");
                 if(progressChanged && songService.mediaPlayer!=null) {
                     songService.mediaPlayer.seekTo(time);
                 }
@@ -243,14 +238,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void showSongList(View view){
-        Intent intent = new Intent(this, SongListActivity.class);
-        this.startActivity(intent);
-    }
-
     public void pause(View view){
         imgPlay.setBackgroundResource(R.drawable.round_play_circle_outline_24);
-        imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
+        imgPlay.setImageResource(R.mipmap.baseline_play_circle_outline_white_48);
         songService.pause();
         PLAYING = false;
     }
@@ -316,6 +306,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (songService.mediaPlayer != null) {
             seekBar.setProgress(songService.mediaPlayer.getCurrentPosition());
             setTime(songProgress, songService.mediaPlayer.getCurrentPosition());
+            if(time<=0)
+                songProgress.setText("00:00");
             if (songService.mediaPlayer.isPlaying()) {
                 runnable = new Runnable() {
                     @Override
@@ -360,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 else
                     Toast.makeText(this, "Storage Permissions Required", Toast.LENGTH_SHORT);
-                Log.e("STORAGE ???",": " + PERMISSIONS_EXTERNAL_STORAGE);
             }
         }
         return false;
