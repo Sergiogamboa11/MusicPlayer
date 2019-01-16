@@ -42,7 +42,6 @@ public class SongService extends Service {
             }
             mediaPlayer.start();
             mediaPlayer.seekTo(time);
-
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -54,12 +53,10 @@ public class SongService extends Service {
                 public void onCompletion(MediaPlayer mp) {
                 }
             });
-
         }
         mediaPlayer.start();
 //        updateSeekBar();
     }
-
 
     public void pause(){
         if(mediaPlayer != null)
@@ -75,7 +72,5 @@ public class SongService extends Service {
 
     public void stop(){
         release();
-
     }
-
 }

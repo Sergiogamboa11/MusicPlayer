@@ -35,7 +35,6 @@ public class SongListActivity extends AppCompatActivity {
         songCursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songColumns, where, null, null);
         Log.e("THING","This: " + MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 
-
         if (songCursor.moveToFirst()) {
             do {
                 String id = songCursor.getString(songCursor.getColumnIndex(
@@ -68,9 +67,7 @@ public class SongListActivity extends AppCompatActivity {
                 SongListActivity.this.startActivity(i);
             }
         });
-
     }
-
 
     private static String getAlbumArt(Context context, long albumID) {
         String path = null;
@@ -89,7 +86,6 @@ public class SongListActivity extends AppCompatActivity {
         return path;
     }
 
-
     public Uri getAlbumUri(Context mContext, String album_id){
         if(mContext!=null) {
             Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
@@ -97,7 +93,5 @@ public class SongListActivity extends AppCompatActivity {
             return imageUri;
         }
         return null;
-
     }
-
 }

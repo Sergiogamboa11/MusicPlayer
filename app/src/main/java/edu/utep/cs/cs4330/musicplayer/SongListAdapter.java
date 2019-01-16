@@ -20,11 +20,9 @@ import java.util.ArrayList;
 
 public class SongListAdapter extends ArrayAdapter<SongModel> {
 
-
     public SongListAdapter(@NonNull Context context, ArrayList<SongModel> songList) {
         super(context, R.layout.song_layout ,songList);
     }
-
 
     @NonNull
     @Override
@@ -48,6 +46,4 @@ public class SongListAdapter extends ArrayAdapter<SongModel> {
         Glide.with(getContext()).load(albumArt).apply(new RequestOptions().placeholder(R.mipmap.generic_cd)).into(artImage);
         return view;
     }
-
-
 }

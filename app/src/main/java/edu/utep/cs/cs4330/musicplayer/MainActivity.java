@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean PLAYING = false;
     boolean NEW_SONG = false;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
 
         checkForUpdates();
-
     }
 
 
@@ -102,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             pause(imgPlay);
         }
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
