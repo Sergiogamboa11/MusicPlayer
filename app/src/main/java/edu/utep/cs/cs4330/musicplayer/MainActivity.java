@@ -33,7 +33,6 @@ import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
 
@@ -87,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         checkForUpdates();
     }
-
 
     public void startClick(View view){
         if(!PLAYING) {
