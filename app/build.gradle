@@ -27,6 +27,7 @@ android {
 repositories {
     mavenCentral()
     maven { url 'https://maven.google.com' }
+
 }
 
 dependencies {
@@ -42,6 +43,7 @@ dependencies {
             exclude group: "com.android.support"
         }
         implementation "com.android.support:support-fragment:27.1.0"
+    implementation 'com.github.scribejava:scribejava-apis:6.2.0'
 
 
 }

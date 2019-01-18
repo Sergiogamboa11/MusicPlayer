@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Activates buttons, gets info for the current song
      */
     public void performActions(){
-
         imgPlay.setOnClickListener(this::startClick);
         back.setOnClickListener(this::skipBack);
         forward.setOnClickListener(this::skipForward);
