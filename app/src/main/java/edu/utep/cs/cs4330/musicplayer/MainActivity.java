@@ -81,6 +81,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         forward = findViewById(R.id.btnFwd);
         handler = new Handler();
 
+        LyricFetcher a = new LyricFetcher();
+        String temp = a.doThing();
+        Log.e("CHECKLOG",temp);
+
         Intent serviceIntent = new Intent(this, SongService.class);
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
 
