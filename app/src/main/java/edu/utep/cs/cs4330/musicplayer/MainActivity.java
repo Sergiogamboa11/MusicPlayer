@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -19,8 +20,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     long SONG_DURATION = -1;
     boolean PLAYING = false;
     boolean NEW_SONG = false;
+    WebView browser;
+    LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,16 +88,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imgPlay = findViewById(R.id.imageButtonPlay);
         forward = findViewById(R.id.btnFwd);
         handler = new Handler();
+        browser = (WebView) findViewById(R.id.webview);
+        linearLayout = findViewById(R.id.linearlayout);
 
-        LyricFetcher a = new LyricFetcher();
-        String temp = a.doThing();
-        Log.e("CHECKLOG",temp);
+        LyricFetcher lyricFetcher = new LyricFetcher();
+        String url = lyricFetcher.sendAuthRequest();
+        String back = lyricFetcher.handleBrowser(browser, linearLayout, url);
+
 
         Intent serviceIntent = new Intent(this, SongService.class);
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
 
         checkForUpdates();
     }
+
+
 
     public void startClick(View view){
         if(!PLAYING) {
