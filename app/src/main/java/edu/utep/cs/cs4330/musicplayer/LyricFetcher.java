@@ -190,10 +190,18 @@ public class LyricFetcher {
         }
         JsonObject rootobj = root.getAsJsonObject();
         JsonElement response = rootobj.get("response");
-        Log.e("Response!", response.toString());
-        JsonArray thing = rootobj.getAsJsonObject("response").getAsJsonArray("hits");
-        Log.e("Response2", thing.toString());
-        
+//        Log.e("Response!", response.toString());
+        JsonArray hit = rootobj.getAsJsonObject("response").getAsJsonArray("hits");
+//        Log.e("Response2", thing.toString());
+        for(int i = 0; i<hit.size();i++) {
+            JsonObject current = hit.get(i).getAsJsonObject();
+            current = current.getAsJsonObject("result");
+            JsonElement songName = current.get("title");
+            JsonElement songURL = current.get("url");
+            JsonElement songArtist = current.getAsJsonObject("primary_artist").get("name");
+            Log.e(i+"", "Artist: " + songArtist.toString() + " Song: " + songName.toString() + " URL: " + songURL.toString());
+        }
+
     }
 
 
