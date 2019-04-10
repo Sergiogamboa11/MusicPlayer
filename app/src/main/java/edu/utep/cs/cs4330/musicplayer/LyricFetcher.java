@@ -18,12 +18,18 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import java.net.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.google.gson.*;
 
 public class LyricFetcher {
 
@@ -85,7 +91,13 @@ public class LyricFetcher {
                     Log.e("Code", code);
 
                     getToken();
-                    makeQuery(browser, linearLayout, "tesseract");
+                    String searchURL = makeQuery(browser, linearLayout, "tesseract");
+                    findSong("hey", "hey", searchURL);
+
+                    //
+                    //
+                    //
+
 
                     return true;
                 }
@@ -133,16 +145,56 @@ public class LyricFetcher {
 
     }
 
-    public void makeQuery(WebView browser, LinearLayout linearLayout, String query){
+    public String makeQuery(WebView browser, LinearLayout linearLayout, String query){
 
 //        new Thread(new Runnable() {
 //            public void run() {
                 browser.bringToFront();
-                browser.loadUrl("https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken());
-                Log.e("We used", code + " empty???");
+                String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
+                browser.loadUrl(url);
+                Log.e("url", url);
+
 //            }
 //        }).start();
 
+        return url;
     }
+
+    public void findSong(String title, String artist, String inURL){
+
+        URL url = null;
+        try {
+            url = new URL(inURL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        URLConnection request = null;
+        try {
+            request = url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            request.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonParser jp = new JsonParser();
+        JsonElement root = null;
+        try {
+            root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JsonObject rootobj = root.getAsJsonObject();
+        JsonElement response = rootobj.get("response");
+        Log.e("Response!", response.toString());
+        JsonArray thing = rootobj.getAsJsonObject("response").getAsJsonArray("hits");
+        Log.e("Response2", thing.toString());
+        
+    }
+
 
 }

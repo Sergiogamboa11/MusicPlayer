@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -90,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         handler = new Handler();
         browser = (WebView) findViewById(R.id.webview);
         linearLayout = findViewById(R.id.linearlayout);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         LyricFetcher lyricFetcher = new LyricFetcher();
         String url = lyricFetcher.sendAuthRequest();
