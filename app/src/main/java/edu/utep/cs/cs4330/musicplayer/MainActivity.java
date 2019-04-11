@@ -106,6 +106,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         checkForUpdates();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (myConntection != null) {
+            unbindService(myConntection);
+        }
+    }
+
 
 
     public void startClick(View view){

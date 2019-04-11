@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.musicplayer;
 
+import android.icu.util.RangeValueIterator;
 import android.util.Log;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -29,6 +30,11 @@ import java.net.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import com.google.gson.*;
 
 public class LyricFetcher {
@@ -36,6 +42,7 @@ public class LyricFetcher {
     String code = "";
     OAuth20Service service;
     OAuth2AccessToken accessToken;
+    String lyrics = "";
 
     public String sendAuthRequest(){
         String clientId = "A6TUo5x_o84rgmnegSeME_toVmfj8QzV8TruDKeL0hAbPnB1TahmnIiXspVUs4W4";
@@ -88,11 +95,12 @@ public class LyricFetcher {
                             code = map.get("code");
                     }
 
-                    Log.e("Code", code);
+//                    Log.e("Code", code);
 
                     getToken();
                     String searchURL = makeQuery(browser, linearLayout, "tesseract");
-                    findSong("tourniquet", "tesseract", searchURL);
+                    String lyricsURL = findSong("tourniquet", "tesseract", searchURL);
+                    lyrics = getLyrics(lyricsURL);
 
                     //
                     //
@@ -112,7 +120,7 @@ public class LyricFetcher {
         browser.bringToFront();
         browser.loadUrl(url);
 
-        return url;
+        return lyrics;
     }
 
     public void getToken(){
@@ -121,7 +129,7 @@ public class LyricFetcher {
                 public void run() {
                     try {
                         accessToken = service.getAccessToken(code);
-                        Log.e("accesstoken1", accessToken.getAccessToken());
+//                        Log.e("accesstoken1", accessToken.getAccessToken());
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {
@@ -149,10 +157,10 @@ public class LyricFetcher {
 
 //        new Thread(new Runnable() {
 //            public void run() {
-                browser.bringToFront();
+//                browser.bringToFront();
                 String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
                 browser.loadUrl(url);
-                Log.e("url", url);
+//                Log.e("url", url);
 
 //            }
 //        }).start();
@@ -160,7 +168,7 @@ public class LyricFetcher {
         return url;
     }
 
-    public void findSong(String title, String artist, String inURL){
+    public String findSong(String title, String artist, String inURL){
 
         URL url = null;
         try {
@@ -199,17 +207,49 @@ public class LyricFetcher {
             JsonElement songName = current.get("title");
             JsonElement songURL = current.get("url");
             JsonElement songArtist = current.getAsJsonObject("primary_artist").get("name");
-//            Log.e(i+"", "Artist: " + songArtist.toString() + " Song: " + songName.toString() + " URL: " + songURL.toString());
             if(title.equalsIgnoreCase(songName.getAsString()) && artist.equalsIgnoreCase(songArtist.getAsString())){
-                foundURL = songURL.toString();
+                foundURL = songURL.getAsString();
             }
-//            Log.e("Current Song: ", title + " " + songName.getAsString());
-//            Log.e("Current Artist: ", artist + " " + songArtist.getAsString());
+
         }
-        Log.e("URL found:", foundURL);
+//        Log.e("URL found:", foundURL);
+        return foundURL;
     }
 
-    public void getLyrics(String url){
+    public String getLyrics(String url){
+
+//        Log.e("url being used: ", url + "!");
+        String[] extractedLyrics = {""};
+        Thread t1 = new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String html = Jsoup.connect(url).get().html();
+                    Document doc = Jsoup.parse(html);
+                    doc.outputSettings(new Document.OutputSettings().prettyPrint(false));
+                    doc.select("br").append("\\n");
+//                    doc.select("p").prepend("\\n\\n");
+//                    String s = doc.html().replaceAll("\\\\n", "\n");
+                    Elements lyrics = doc.select(".lyrics");
+                    Elements clean = lyrics.select("p");
+                    extractedLyrics[0] = clean.text();
+                    Log.e("Clean data", clean.text());
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+
+        t1.start();
+        try {
+            t1.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return extractedLyrics[0];
 
     }
 
