@@ -92,7 +92,7 @@ public class LyricFetcher {
 
                     getToken();
                     String searchURL = makeQuery(browser, linearLayout, "tesseract");
-                    findSong("hey", "hey", searchURL);
+                    findSong("tourniquet", "tesseract", searchURL);
 
                     //
                     //
@@ -180,7 +180,6 @@ public class LyricFetcher {
             e.printStackTrace();
         }
 
-
         JsonParser jp = new JsonParser();
         JsonElement root = null;
         try {
@@ -193,16 +192,25 @@ public class LyricFetcher {
 //        Log.e("Response!", response.toString());
         JsonArray hit = rootobj.getAsJsonObject("response").getAsJsonArray("hits");
 //        Log.e("Response2", thing.toString());
+        String foundURL = "";
         for(int i = 0; i<hit.size();i++) {
             JsonObject current = hit.get(i).getAsJsonObject();
             current = current.getAsJsonObject("result");
             JsonElement songName = current.get("title");
             JsonElement songURL = current.get("url");
             JsonElement songArtist = current.getAsJsonObject("primary_artist").get("name");
-            Log.e(i+"", "Artist: " + songArtist.toString() + " Song: " + songName.toString() + " URL: " + songURL.toString());
+//            Log.e(i+"", "Artist: " + songArtist.toString() + " Song: " + songName.toString() + " URL: " + songURL.toString());
+            if(title.equalsIgnoreCase(songName.getAsString()) && artist.equalsIgnoreCase(songArtist.getAsString())){
+                foundURL = songURL.toString();
+            }
+//            Log.e("Current Song: ", title + " " + songName.getAsString());
+//            Log.e("Current Artist: ", artist + " " + songArtist.getAsString());
         }
-
+        Log.e("URL found:", foundURL);
     }
 
+    public void getLyrics(String url){
+
+    }
 
 }
