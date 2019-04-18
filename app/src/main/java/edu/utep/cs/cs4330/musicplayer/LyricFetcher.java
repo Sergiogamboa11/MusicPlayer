@@ -7,6 +7,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.github.scribejava.apis.GeniusApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -61,14 +62,14 @@ public class LyricFetcher {
 
     }
 
-    public String handleBrowser(WebView browser, LinearLayout linearLayout, String url){
+    public String handleBrowser(WebView browser, ScrollView scrollView, String url){
 
         browser.setWebViewClient(new WebViewClient(){
             public boolean shouldOverrideUrlLoading(WebView view, String url)
             {
                 if(!url.toLowerCase().contains("genius"))
                 {
-                    linearLayout.bringToFront();
+                    scrollView.bringToFront();
 
                     URL authURL;
 
@@ -98,10 +99,10 @@ public class LyricFetcher {
 //                    Log.e("Code", code);
 
                     getToken();
-                    String searchURL = makeQuery(browser, linearLayout, "tesseract");
+                    String searchURL = makeQuery(browser, scrollView, "tesseract");
                     String lyricsURL = findSong("tourniquet", "tesseract", searchURL);
                     lyrics = getLyrics(lyricsURL);
-
+                    Log.e("Gottem", lyrics + "1");
                     //
                     //
                     //
@@ -153,7 +154,7 @@ public class LyricFetcher {
 
     }
 
-    public String makeQuery(WebView browser, LinearLayout linearLayout, String query){
+    public String makeQuery(WebView browser, ScrollView scrollView, String query){
 
 //        new Thread(new Runnable() {
 //            public void run() {

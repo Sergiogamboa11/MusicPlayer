@@ -25,16 +25,21 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
 
@@ -63,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean NEW_SONG = false;
     WebView browser;
     LinearLayout linearLayout;
+    ScrollView scrollView;
+    Button lyricsButton;
+    TextView lyricsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,13 +99,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         handler = new Handler();
         browser = (WebView) findViewById(R.id.webview);
         linearLayout = findViewById(R.id.linearlayout);
+        scrollView = findViewById(R.id.scrollview);
+        lyricsButton = findViewById(R.id.lyricsBtn);
+        lyricsView = findViewById(R.id.lyricsView);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+//        scrollView.bringToFront();
 
-        LyricFetcher lyricFetcher = new LyricFetcher();
-        String url = lyricFetcher.sendAuthRequest();
-        String back = lyricFetcher.handleBrowser(browser, linearLayout, url);
+        lyricsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LyricFetcher lyricFetcher = new LyricFetcher();
+                String url = lyricFetcher.sendAuthRequest();
+
+
+                String back = lyricFetcher.handleBrowser(browser, scrollView, url);
+
+
+
+                Log.e("string returned", back +"1");
+                lyricsView.setText(back);
+            }
+        });
+
+
+
+
 
 
         Intent serviceIntent = new Intent(this, SongService.class);
