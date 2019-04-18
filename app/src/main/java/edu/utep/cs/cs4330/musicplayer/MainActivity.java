@@ -112,14 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 LyricFetcher lyricFetcher = new LyricFetcher();
                 String url = lyricFetcher.sendAuthRequest();
-
-
-                String back = lyricFetcher.handleBrowser(browser, scrollView, url);
-
-
-
-                Log.e("string returned", back +"1");
-                lyricsView.setText(back);
+                lyricFetcher.handleBrowser(browser, scrollView, lyricsView, url);
             }
         });
 

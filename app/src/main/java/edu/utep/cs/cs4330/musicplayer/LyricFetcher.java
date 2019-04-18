@@ -8,6 +8,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.github.scribejava.apis.GeniusApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -62,7 +63,7 @@ public class LyricFetcher {
 
     }
 
-    public String handleBrowser(WebView browser, ScrollView scrollView, String url){
+    public void handleBrowser(WebView browser, ScrollView scrollView, TextView textView, String url){
 
         browser.setWebViewClient(new WebViewClient(){
             public boolean shouldOverrideUrlLoading(WebView view, String url)
@@ -96,17 +97,14 @@ public class LyricFetcher {
                             code = map.get("code");
                     }
 
-//                    Log.e("Code", code);
-
+                    //THIS PART
                     getToken();
                     String searchURL = makeQuery(browser, scrollView, "tesseract");
                     String lyricsURL = findSong("tourniquet", "tesseract", searchURL);
                     lyrics = getLyrics(lyricsURL);
-                    Log.e("Gottem", lyrics + "1");
-                    //
-                    //
-                    //
-
+                    updateLyricView(textView, lyrics);
+//                    Log.e("Gottem", lyrics + "1");
+                    //TO THIS PART
 
                     return true;
                 }
@@ -121,7 +119,7 @@ public class LyricFetcher {
         browser.bringToFront();
         browser.loadUrl(url);
 
-        return lyrics;
+//        return lyrics;
     }
 
     public void getToken(){
@@ -155,17 +153,8 @@ public class LyricFetcher {
     }
 
     public String makeQuery(WebView browser, ScrollView scrollView, String query){
-
-//        new Thread(new Runnable() {
-//            public void run() {
-//                browser.bringToFront();
-                String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
-                browser.loadUrl(url);
-//                Log.e("url", url);
-
-//            }
-//        }).start();
-
+        String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
+        browser.loadUrl(url);
         return url;
     }
 
@@ -252,6 +241,10 @@ public class LyricFetcher {
 
         return extractedLyrics[0];
 
+    }
+
+    public void updateLyricView(TextView textView, String string){
+        textView.setText(string);
     }
 
 }
