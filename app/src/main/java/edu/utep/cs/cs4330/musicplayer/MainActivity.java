@@ -112,13 +112,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 LyricFetcher lyricFetcher = new LyricFetcher();
                 String url = lyricFetcher.sendAuthRequest();
-                lyricFetcher.handleBrowser(browser, scrollView, lyricsView, url);
+                lyricFetcher.handleBrowser(browser, scrollView, lyricsView, url, "avenged sevenfold", "nightmare");
             }
         });
-
-
-
-
 
 
         Intent serviceIntent = new Intent(this, SongService.class);
@@ -135,9 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             unbindService(myConntection);
         }
     }
-
-
-
+    
     public void startClick(View view){
         if(!PLAYING) {
             PLAYING = true;

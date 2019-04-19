@@ -194,7 +194,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="wrap_content"
 
                 android:background="#212121">
 
@@ -211,11 +211,18 @@
                 <TextView
                     android:id="@+id/lyricsView"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
                     android:background="#fffff0"
+                    android:singleLine="false"
                     android:text="LyricsView"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lyricsBtn"
-                    tools:layout_editor_absoluteX="0dp" />
+                    app:layout_constraintVertical_bias="0.0" />
             </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>

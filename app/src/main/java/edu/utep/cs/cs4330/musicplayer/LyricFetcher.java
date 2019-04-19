@@ -63,7 +63,7 @@ public class LyricFetcher {
 
     }
 
-    public void handleBrowser(WebView browser, ScrollView scrollView, TextView textView, String url){
+    public void handleBrowser(WebView browser, ScrollView scrollView, TextView textView, String url, String songArtist, String songName){
 
         browser.setWebViewClient(new WebViewClient(){
             public boolean shouldOverrideUrlLoading(WebView view, String url)
@@ -97,14 +97,11 @@ public class LyricFetcher {
                             code = map.get("code");
                     }
 
-                    //THIS PART
                     getToken();
                     String searchURL = makeQuery(browser, scrollView, "tesseract");
                     String lyricsURL = findSong("tourniquet", "tesseract", searchURL);
                     lyrics = getLyrics(lyricsURL);
                     updateLyricView(textView, lyrics);
-//                    Log.e("Gottem", lyrics + "1");
-                    //TO THIS PART
 
                     return true;
                 }
@@ -207,8 +204,6 @@ public class LyricFetcher {
     }
 
     public String getLyrics(String url){
-
-//        Log.e("url being used: ", url + "!");
         String[] extractedLyrics = {""};
         Thread t1 = new Thread(new Runnable() {
             public void run() {
@@ -217,13 +212,10 @@ public class LyricFetcher {
                     Document doc = Jsoup.parse(html);
                     doc.outputSettings(new Document.OutputSettings().prettyPrint(false));
                     doc.select("br").append("\\n");
-//                    doc.select("p").prepend("\\n\\n");
-//                    String s = doc.html().replaceAll("\\\\n", "\n");
+                    doc.select("p").prepend("\\n\\n");
                     Elements lyrics = doc.select(".lyrics");
                     Elements clean = lyrics.select("p");
-                    extractedLyrics[0] = clean.text();
-                    Log.e("Clean data", clean.text());
-
+                    extractedLyrics[0] = clean.text().replaceAll("\\\\n", "\n");
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -240,7 +232,6 @@ public class LyricFetcher {
         }
 
         return extractedLyrics[0];
-
     }
 
     public void updateLyricView(TextView textView, String string){
