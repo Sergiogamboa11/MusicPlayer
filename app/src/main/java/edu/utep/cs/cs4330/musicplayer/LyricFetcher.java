@@ -45,6 +45,8 @@ public class LyricFetcher {
     OAuth20Service service;
     OAuth2AccessToken accessToken;
     String lyrics = "";
+    String artist;
+    String song;
 
     public String sendAuthRequest(){
         String clientId = "A6TUo5x_o84rgmnegSeME_toVmfj8QzV8TruDKeL0hAbPnB1TahmnIiXspVUs4W4";
@@ -98,8 +100,10 @@ public class LyricFetcher {
                     }
 
                     getToken();
-                    String searchURL = makeQuery(browser, scrollView, "tesseract");
-                    String lyricsURL = findSong("tourniquet", "tesseract", searchURL);
+                    artist = songArtist.replace(" ", "_");
+                    song = songName.replace(" ", "_");
+                    String searchURL = makeQuery(browser, scrollView, artist+"_"+song);
+                    String lyricsURL = findSong(songName, songArtist, searchURL);
                     lyrics = getLyrics(lyricsURL);
                     updateLyricView(textView, lyrics);
 
@@ -151,11 +155,13 @@ public class LyricFetcher {
 
     public String makeQuery(WebView browser, ScrollView scrollView, String query){
         String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
+        Log.e("Query made: ", url);
         browser.loadUrl(url);
         return url;
     }
 
     public String findSong(String title, String artist, String inURL){
+
 
         URL url = null;
         try {
@@ -179,14 +185,15 @@ public class LyricFetcher {
         JsonElement root = null;
         try {
             root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+            Log.e("Got content maybe?", root.toString()+"this");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         JsonObject rootobj = root.getAsJsonObject();
         JsonElement response = rootobj.get("response");
-//        Log.e("Response!", response.toString());
+        Log.e("Response!", response.toString());
         JsonArray hit = rootobj.getAsJsonObject("response").getAsJsonArray("hits");
-//        Log.e("Response2", thing.toString());
         String foundURL = "";
         for(int i = 0; i<hit.size();i++) {
             JsonObject current = hit.get(i).getAsJsonObject();
