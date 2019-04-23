@@ -2,6 +2,7 @@ package edu.utep.cs.cs4330.musicplayer;
 
 import android.icu.util.RangeValueIterator;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -73,6 +74,8 @@ public class LyricFetcher {
                 if(!url.toLowerCase().contains("genius"))
                 {
                     scrollView.bringToFront();
+                    browser.setVisibility(View.INVISIBLE);
+
 
                     URL authURL;
 
@@ -99,15 +102,19 @@ public class LyricFetcher {
                             code = map.get("code");
                     }
 
+                    //DOESNT BREAK CODE FROM HERE
+
                     getToken();
                     artist = songArtist.replace(" ", "_");
                     song = songName.replace(" ", "_");
                     String searchURL = makeQuery(browser, scrollView, artist+"_"+song);
                     String lyricsURL = findSong(songName, songArtist, searchURL);
-                    lyrics = getLyrics(lyricsURL);
+                    lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
                     updateLyricView(textView, lyrics);
 
-                    return true;
+                    //TO HERE
+
+                    return false;
                 }
                 return false;
             }
@@ -119,8 +126,6 @@ public class LyricFetcher {
 
         browser.bringToFront();
         browser.loadUrl(url);
-
-//        return lyrics;
     }
 
     public void getToken(){

@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         checkForUpdates();
     }
 
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
