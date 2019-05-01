@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -65,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ScrollView scrollView;
     Button lyricsButton;
     TextView lyricsView;
+    ViewGroup.LayoutParams lyricParams;
+    ViewGroup.LayoutParams lyricsBtnParams;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +101,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsButton = findViewById(R.id.lyricsBtn);
         lyricsView = findViewById(R.id.lyricsView);
 
+        lyricsView.setVisibility(View.INVISIBLE);
+        lyricParams = lyricsView.getLayoutParams();
+        lyricsBtnParams = lyricsButton.getLayoutParams();
+
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-//        scrollView.bringToFront();
 
         lyricsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +120,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
 
         checkForUpdates();
+
+        if(songList==null){
+            lyricsButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -120,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 String lyrics = data.getStringExtra("lyrics");
+
+                lyricParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                lyricsView.setLayoutParams(lyricParams);
+
+                lyricsBtnParams.height = 0;
+                lyricsButton.setLayoutParams(lyricsBtnParams);
+
+                lyricsButton.setVisibility(View.INVISIBLE);
+                lyricsView.setVisibility(View.VISIBLE);
                 lyricsView.setText(lyrics);
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -329,6 +350,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
+            lyricsView.setVisibility(View.INVISIBLE);
+            lyricParams.height = 0;
+            lyricsView.setLayoutParams(lyricParams);
+
+            lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+            lyricsButton.setLayoutParams(lyricsBtnParams);
+            lyricsButton.setVisibility(View.VISIBLE);
+
             if(temp)
                 play(view);
         }
@@ -347,6 +376,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
+            lyricsView.setVisibility(View.INVISIBLE);
+            lyricParams.height = 0;
+            lyricsView.setLayoutParams(lyricParams);
+
+            lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+            lyricsButton.setLayoutParams(lyricsBtnParams);
+            lyricsButton.setVisibility(View.VISIBLE);
             if(temp)
                 play(view);
         }
