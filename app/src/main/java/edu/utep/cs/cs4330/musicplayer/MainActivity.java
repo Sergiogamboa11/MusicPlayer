@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -69,7 +71,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ViewGroup.LayoutParams lyricParams;
     ViewGroup.LayoutParams lyricsBtnParams;
 
-
+    ConstraintSet set = new ConstraintSet();
+    ConstraintLayout lyricsLayout;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsView.setVisibility(View.INVISIBLE);
         lyricParams = lyricsView.getLayoutParams();
         lyricsBtnParams = lyricsButton.getLayoutParams();
-
+        lyricsLayout = (ConstraintLayout) findViewById(R.id.lyricsLayout);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -133,13 +137,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if(resultCode == Activity.RESULT_OK){
                 String lyrics = data.getStringExtra("lyrics");
 
-                lyricParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                lyricsView.setLayoutParams(lyricParams);
+                set.clone(lyricsLayout);
+                set.clear(R.id.lyricsView, ConstraintSet.TOP);
+                set.connect(R.id.lyricsView, ConstraintSet.TOP, R.id.lyricsLayout, ConstraintSet.BOTTOM, 0);
+                set.applyTo(lyricsLayout);
 
                 lyricsBtnParams.height = 0;
                 lyricsButton.setLayoutParams(lyricsBtnParams);
-
                 lyricsButton.setVisibility(View.INVISIBLE);
+
+                lyricParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                lyricsView.setLayoutParams(lyricParams);
                 lyricsView.setVisibility(View.VISIBLE);
                 lyricsView.setText(lyrics);
             }
@@ -350,13 +358,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
-            lyricsView.setVisibility(View.INVISIBLE);
-            lyricParams.height = 0;
-            lyricsView.setLayoutParams(lyricParams);
 
             lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
             lyricsButton.setLayoutParams(lyricsBtnParams);
             lyricsButton.setVisibility(View.VISIBLE);
+
+            lyricsView.setVisibility(View.INVISIBLE);
+            lyricParams.height = 0;
+            lyricsView.setLayoutParams(lyricParams);
 
             if(temp)
                 play(view);
@@ -376,13 +385,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
-            lyricsView.setVisibility(View.INVISIBLE);
-            lyricParams.height = 0;
-            lyricsView.setLayoutParams(lyricParams);
 
             lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
             lyricsButton.setLayoutParams(lyricsBtnParams);
             lyricsButton.setVisibility(View.VISIBLE);
+
+            lyricsView.setVisibility(View.INVISIBLE);
+            lyricParams.height = 0;
+            lyricsView.setLayoutParams(lyricParams);
+
             if(temp)
                 play(view);
         }
