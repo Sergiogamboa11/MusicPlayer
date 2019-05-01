@@ -1,13 +1,13 @@
 package edu.utep.cs.cs4330.musicplayer;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.StrictMode;
@@ -21,10 +21,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,10 +32,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import edu.utep.cs.cs4330.musicplayer.SongService.MyLocalBinder;
 
@@ -66,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     long SONG_DURATION = -1;
     boolean PLAYING = false;
     boolean NEW_SONG = false;
-    WebView browser;
+    android.webkit.WebView browser;
     LinearLayout linearLayout;
     ScrollView scrollView;
     Button lyricsButton;
@@ -97,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imgPlay = findViewById(R.id.imageButtonPlay);
         forward = findViewById(R.id.btnFwd);
         handler = new Handler();
-        browser = (WebView) findViewById(R.id.webview);
+        browser = (android.webkit.WebView) findViewById(R.id.webview);
         linearLayout = findViewById(R.id.linearlayout);
         scrollView = findViewById(R.id.scrollview);
         lyricsButton = findViewById(R.id.lyricsBtn);
@@ -110,12 +104,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LyricFetcher lyricFetcher = new LyricFetcher();
-                String url = lyricFetcher.sendAuthRequest();
-                lyricFetcher.handleBrowser(browser, scrollView, lyricsView, url, songList.get(CURRENT_POSITION).songArtist, songList.get(CURRENT_POSITION).songName);
+                openWebViewActivity();
             }
         });
-
 
         Intent serviceIntent = new Intent(this, SongService.class);
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
@@ -123,7 +114,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         checkForUpdates();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String lyrics = data.getStringExtra("lyrics");
+                lyricsView.setText(lyrics);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+
+            }
+        }
+    }
+
+    public void openWebViewActivity(){
+        Intent webViewIntent = new Intent(this, WebViewActivity.class);
+        webViewIntent.putExtra("artist", songList.get(CURRENT_POSITION).songArtist);
+        webViewIntent.putExtra("song", songList.get(CURRENT_POSITION).songName);
+        startActivityForResult(webViewIntent, 1);
+    }
 
     @Override
     public void onDestroy() {

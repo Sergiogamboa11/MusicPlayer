@@ -218,7 +218,7 @@
                     android:textColor="#fffff0"
                     android:singleLine="false"
                     android:gravity="center_horizontal"
-                    android:background="#210000"
+                    android:background="#202020"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

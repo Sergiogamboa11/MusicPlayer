@@ -3,7 +3,7 @@
     package="edu.utep.cs.cs4330.musicplayer">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,8 +26,9 @@
         <service
             android:name=".SongService"
             android:enabled="true"
-            android:exported="true">
-        </service>
-    </application>
-</manifest>
+            android:exported="true" />
 
+        <activity android:name=".WebViewActivity"></activity>
+    </application>
+
+</manifest>

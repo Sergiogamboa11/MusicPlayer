@@ -66,17 +66,14 @@ public class LyricFetcher {
 
     }
 
-    public void handleBrowser(WebView browser, ScrollView scrollView, TextView textView, String url, String songArtist, String songName){
+    public void handleBrowser( WebView browser, String url, String songArtist, String songName){
 
         browser.setWebViewClient(new WebViewClient(){
             public boolean shouldOverrideUrlLoading(WebView view, String url)
             {
                 if(!url.toLowerCase().contains("genius"))
                 {
-                    scrollView.bringToFront();
-                    browser.setVisibility(View.INVISIBLE);
-
-
+//                    browser.setVisibility(View.INVISIBLE);
                     URL authURL;
 
                     try {
@@ -102,23 +99,21 @@ public class LyricFetcher {
                             code = map.get("code");
                     }
 
-                    //DOESNT BREAK CODE FROM HERE
-
                     getToken();
                     artist = songArtist.replace(" ", "_");
                     song = songName.replace(" ", "_");
-                    String searchURL = makeQuery(browser, scrollView, artist+"_"+song);
+                    String searchURL = makeQuery(browser, artist+"_"+song);
                     String lyricsURL = findSong(songName, songArtist, searchURL);
                     lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
-                    updateLyricView(textView, lyrics);
-
-                    //TO HERE
+//                    updateLyricView(textView, lyrics);
+//                    WebViewActivity.lyrics = lyrics;
 
                     return false;
                 }
-                return false;
+                return true;
             }
         });
+
 
         WebSettings webSettings = browser.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -126,6 +121,7 @@ public class LyricFetcher {
 
         browser.bringToFront();
         browser.loadUrl(url);
+
     }
 
     public void getToken(){
@@ -158,7 +154,7 @@ public class LyricFetcher {
 
     }
 
-    public String makeQuery(WebView browser, ScrollView scrollView, String query){
+    public String makeQuery(WebView browser, String query){
         String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
         Log.e("Query made: ", url);
         browser.loadUrl(url);
@@ -248,6 +244,10 @@ public class LyricFetcher {
 
     public void updateLyricView(TextView textView, String string){
         textView.setText(string);
+    }
+
+    public String setLyrics(String lyrics){
+        return lyrics;
     }
 
 }
