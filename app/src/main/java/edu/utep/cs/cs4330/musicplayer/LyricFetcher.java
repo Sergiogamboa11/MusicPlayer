@@ -103,8 +103,15 @@ public class LyricFetcher {
                     artist = songArtist.replace(" ", "_");
                     song = songName.replace(" ", "_");
                     String searchURL = makeQuery(browser, artist+"_"+song);
+//                    Log.e("Whats my URL?", searchURL+ "1");
                     String lyricsURL = findSong(songName, songArtist, searchURL);
-                    lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+//                    Log.e("Whats my URL?", lyricsURL+ "2");
+                    if(lyricsURL.equals("")){
+                        lyrics = "-1";
+                    }
+                    else {
+                        lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+                    }
 //                    updateLyricView(textView, lyrics);
 //                    WebViewActivity.lyrics = lyrics;
 
@@ -162,7 +169,6 @@ public class LyricFetcher {
     }
 
     public String findSong(String title, String artist, String inURL){
-
 
         URL url = null;
         try {

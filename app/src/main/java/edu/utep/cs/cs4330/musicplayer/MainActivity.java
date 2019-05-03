@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     ConstraintSet set = new ConstraintSet();
     ConstraintLayout lyricsLayout;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

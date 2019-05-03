@@ -57,9 +57,13 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void startActivity(){
 
-        //If lyrics are ok
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("lyrics",lyrics);
+        if(lyrics.equals("-1")){
+            returnIntent.putExtra("lyrics","No lyrics found for this song");
+        }
+        else{
+            returnIntent.putExtra("lyrics",lyrics);
+        }
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
