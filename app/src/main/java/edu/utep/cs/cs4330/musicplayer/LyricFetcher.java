@@ -66,7 +66,7 @@ public class LyricFetcher {
                 .userAgent("ScribeJava")
                 .build(GeniusApi.instance());
         final String authorizationUrl = service.getAuthorizationUrl();
-
+        Log.e("AuthURL", authorizationUrl);
         return authorizationUrl;
 
     }
@@ -80,19 +80,26 @@ public class LyricFetcher {
                 {
 //                    browser.setVisibility(View.INVISIBLE);
                     getCode(url);
-                    WebViewActivity.accessToken = getToken(code);
-                    //
-                    artist = songArtist.replace(" ", "_");
-                    song = songName.replace(" ", "_");
-                    String searchURL = makeQuery(browser, artist+"_"+song);
-                    String lyricsURL = findSong(songName, songArtist, searchURL);
-                    if(lyricsURL.equals("")){
-                        lyrics = "-1"; //If no URL, err msg
-                    }
+                    String lyricsURL = "";
+                    if(code.equals(""))
+                        lyrics = "-1";
                     else {
-                        lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+
+                        WebViewActivity.accessToken = getToken(code);
+
+                        artist = songArtist.replace(" ", "_");
+                        song = songName.replace(" ", "_");
+                        String searchURL = makeQuery(browser, artist + "_" + song);
+                        lyricsURL = findSong(songName, songArtist, searchURL);
+
+                        if(lyricsURL.equals("")){
+                            lyrics = "-2"; //If no URL, err msg
+                        }
+                        else {
+                            lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+                        }
                     }
-                    //
+
                     return false;
                 }
                 return true;
@@ -134,6 +141,7 @@ public class LyricFetcher {
             if(key.equals("code"))
                 code = map.get("code");
         }
+        Log.e("This is our code", code+ "@@@");
         return code;
     }
 
@@ -144,12 +152,12 @@ public class LyricFetcher {
         String searchURL = makeQuery(browser, artist+"_"+song);
         String lyricsURL = findSong(songName, songArtist, searchURL);
         if(lyricsURL.equals("")){
-            lyrics = "-1"; //If no URL, err msg
+            lyrics = "No lyrics found for this song";
         }
         else {
             lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
         }
-        Log.e("Our lyrics", lyrics);
+//        Log.e("Our lyrics", lyrics);
 
     }
 

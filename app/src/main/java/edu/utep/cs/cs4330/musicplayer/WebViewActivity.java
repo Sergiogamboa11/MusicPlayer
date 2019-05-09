@@ -64,6 +64,9 @@ public class WebViewActivity extends AppCompatActivity {
 
         Intent returnIntent = new Intent();
         if(lyrics.equals("-1")){
+            returnIntent.putExtra("lyrics","-1"); //User clicked cancel
+        }
+        if(lyrics.equals("-2")){
             returnIntent.putExtra("lyrics","No lyrics found for this song");
         }
         else{

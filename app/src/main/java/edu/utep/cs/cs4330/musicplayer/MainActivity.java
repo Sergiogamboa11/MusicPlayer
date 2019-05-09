@@ -146,7 +146,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 String lyrics = data.getStringExtra("lyrics");
-                onLyricsReceived(lyrics);
+                if(!lyrics.equals("-1")) //if user didnt click cancel
+                    onLyricsReceived(lyrics);
 
             }
             if (resultCode == Activity.RESULT_CANCELED) {
