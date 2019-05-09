@@ -142,16 +142,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 String lyrics = data.getStringExtra("lyrics");
                 if(!lyrics.equals("-1")) //if user didnt click cancel
                     onLyricsReceived(lyrics);
-
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-
             }
         }
     }
@@ -196,8 +193,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         t1.start();
-
-
     }
 
     public void openWebViewActivity(){

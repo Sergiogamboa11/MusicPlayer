@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="0:00"
+                    android:text="00:00"
                     android:textColor="@android:color/white"
                     app:layout_constraintBottom_toBottomOf="@+id/seekBar"
                     app:layout_constraintEnd_toStartOf="@+id/seekBar"
@@ -191,6 +191,63 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@mipmap/baseline_play_circle_outline_white_48" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:background="#1c1c1c">
+
+                <TextView
+                    android:id="@+id/textViewTempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Change Tempo"
+                    android:textColor="#fffff0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <SeekBar
+                    android:id="@+id/seekBarTempo"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@android:color/background_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewTempo" />
+
+                <TextView
+                    android:id="@+id/textViewPitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Change Pitch"
+                    android:textColor="#fffff0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/seekBarTempo" />
+
+                <SeekBar
+                    android:id="@+id/seekBarPitch"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@android:color/background_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewPitch" />
+
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
