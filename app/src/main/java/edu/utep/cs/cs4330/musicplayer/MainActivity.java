@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -20,10 +21,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SeekBar seekBar;
     Runnable runnable;
     Handler handler;
+    Handler lyricsHandler;
     int time = 0;
     ArrayList<SongModel> songList;
     String SONG_URI = "";
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView lyricsView;
     ViewGroup.LayoutParams lyricParams;
     ViewGroup.LayoutParams lyricsBtnParams;
+    WebView webView;
 
     ConstraintSet set = new ConstraintSet();
     ConstraintLayout lyricsLayout;
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         scrollView = findViewById(R.id.scrollview);
         lyricsButton = findViewById(R.id.lyricsBtn);
         lyricsView = findViewById(R.id.lyricsView);
+        webView = findViewById(R.id.webview);
 
         lyricsView.setVisibility(View.INVISIBLE);
         lyricParams = lyricsView.getLayoutParams();
@@ -116,7 +120,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openWebViewActivity();
+                if(WebViewActivity.accessToken==null)
+                    openWebViewActivity();
+                else{
+                    getLyrics();
+                }
             }
         });
 
@@ -128,6 +136,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(songList==null){
             lyricsButton.setVisibility(View.INVISIBLE);
         }
+
+
     }
 
     @Override
@@ -136,25 +146,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
                 String lyrics = data.getStringExtra("lyrics");
+                onLyricsReceived(lyrics);
 
-                set.clone(lyricsLayout);
-                set.clear(R.id.lyricsView, ConstraintSet.TOP);
-                set.connect(R.id.lyricsView, ConstraintSet.TOP, R.id.lyricsLayout, ConstraintSet.BOTTOM, 0);
-                set.applyTo(lyricsLayout);
-
-                lyricsBtnParams.height = 0;
-                lyricsButton.setLayoutParams(lyricsBtnParams);
-                lyricsButton.setVisibility(View.INVISIBLE);
-
-                lyricParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                lyricsView.setLayoutParams(lyricParams);
-                lyricsView.setVisibility(View.VISIBLE);
-                lyricsView.setText(lyrics);
             }
             if (resultCode == Activity.RESULT_CANCELED) {
 
             }
         }
+    }
+
+    public void onLyricsReceived(String lyrics){
+        set.clone(lyricsLayout);
+        set.clear(R.id.lyricsView, ConstraintSet.TOP);
+        set.connect(R.id.lyricsView, ConstraintSet.TOP, R.id.lyricsLayout, ConstraintSet.BOTTOM, 0);
+        set.applyTo(lyricsLayout);
+
+        lyricsBtnParams.height = 0;
+        lyricsButton.setLayoutParams(lyricsBtnParams);
+        lyricsButton.setVisibility(View.INVISIBLE);
+
+        lyricParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        lyricsView.setLayoutParams(lyricParams);
+        lyricsView.setVisibility(View.VISIBLE);
+        lyricsView.setText(lyrics);
+    }
+
+    public void getLyrics(){
+        final String[] lyrics = {""};
+       lyricsHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                onLyricsReceived(lyrics[0]);
+            }
+        };
+
+        LyricFetcher lyricFetcher = new LyricFetcher();
+        lyricFetcher.lyrics = "";
+        lyricFetcher.saveLyrics(webView, songList.get(CURRENT_POSITION).songArtist, songList.get(CURRENT_POSITION).songName);
+
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(lyricFetcher.lyrics.equals("")){
+
+                }
+                lyrics[0] = lyricFetcher.lyrics;
+                lyricsHandler.sendEmptyMessage(0);
+            }
+        });
+        t1.start();
+
+
     }
 
     public void openWebViewActivity(){

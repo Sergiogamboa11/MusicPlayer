@@ -49,6 +49,11 @@ public class LyricFetcher {
     String artist;
     String song;
 
+
+    /**
+     * Sends authorization request to Genius
+     * @return The URL that is returned from Genius
+     */
     public String sendAuthRequest(){
         String clientId = "A6TUo5x_o84rgmnegSeME_toVmfj8QzV8TruDKeL0hAbPnB1TahmnIiXspVUs4W4";
         String clientSecret = "1ViW0RoSWsIgB247kz8JY9XzCVvRdpJiRwmtRlxL6Svw6bUYpP9G5f2OIFuwkCx4x4hRi0TsIv7XL34CKv1V5A";
@@ -74,47 +79,20 @@ public class LyricFetcher {
                 if(!url.toLowerCase().contains("genius"))
                 {
 //                    browser.setVisibility(View.INVISIBLE);
-                    URL authURL;
-
-                    try {
-                        authURL = new URL(url);
-                    }
-                    catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    String query = authURL.getQuery();
-
-                    Map<String, String> map = new HashMap<String, String>();
-                    String [] params = query.split("&");
-                    for (String param : params)
-                    {
-                        String name = param.split("=")[0];
-                        String value = param.split("=")[1];
-                        map.put(name, value);
-                    }
-
-                    for(String key: map.keySet()){
-                        if(key.equals("code"))
-                            code = map.get("code");
-                    }
-
-                    getToken();
+                    getCode(url);
+                    WebViewActivity.accessToken = getToken(code);
+                    //
                     artist = songArtist.replace(" ", "_");
                     song = songName.replace(" ", "_");
                     String searchURL = makeQuery(browser, artist+"_"+song);
-//                    Log.e("Whats my URL?", searchURL+ "1");
                     String lyricsURL = findSong(songName, songArtist, searchURL);
-//                    Log.e("Whats my URL?", lyricsURL+ "2");
                     if(lyricsURL.equals("")){
-                        lyrics = "-1";
+                        lyrics = "-1"; //If no URL, err msg
                     }
                     else {
                         lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
                     }
-//                    updateLyricView(textView, lyrics);
-//                    WebViewActivity.lyrics = lyrics;
-
+                    //
                     return false;
                 }
                 return true;
@@ -131,7 +109,51 @@ public class LyricFetcher {
 
     }
 
-    public void getToken(){
+    public String getCode(String url){
+        URL authURL;
+
+        try {
+            authURL = new URL(url);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String query = authURL.getQuery();
+
+        Map<String, String> map = new HashMap<String, String>();
+        String [] params = query.split("&");
+        for (String param : params)
+        {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            map.put(name, value);
+        }
+
+        for(String key: map.keySet()){
+            if(key.equals("code"))
+                code = map.get("code");
+        }
+        return code;
+    }
+
+    public void saveLyrics(WebView browser, String songArtist, String songName){
+        accessToken = WebViewActivity.accessToken;
+        artist = songArtist.replace(" ", "_");
+        song = songName.replace(" ", "_");
+        String searchURL = makeQuery(browser, artist+"_"+song);
+        String lyricsURL = findSong(songName, songArtist, searchURL);
+        if(lyricsURL.equals("")){
+            lyrics = "-1"; //If no URL, err msg
+        }
+        else {
+            lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+        }
+        Log.e("Our lyrics", lyrics);
+
+    }
+
+    public OAuth2AccessToken getToken(String code){
 
             Thread t1 = new Thread(new Runnable() {
                 public void run() {
@@ -158,6 +180,7 @@ public class LyricFetcher {
                     e.printStackTrace();
                 }
             }
+            return accessToken;
 
     }
 
@@ -245,15 +268,8 @@ public class LyricFetcher {
             e.printStackTrace();
         }
 
+        Log.e("Our extracted lyrics", extractedLyrics[0]);
         return extractedLyrics[0];
-    }
-
-    public void updateLyricView(TextView textView, String string){
-        textView.setText(string);
-    }
-
-    public String setLyrics(String lyrics){
-        return lyrics;
     }
 
 }

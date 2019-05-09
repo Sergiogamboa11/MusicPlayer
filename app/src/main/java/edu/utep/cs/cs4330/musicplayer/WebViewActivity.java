@@ -11,17 +11,15 @@ import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
+
 public class WebViewActivity extends AppCompatActivity {
 
     String lyrics = "";
+    static OAuth2AccessToken accessToken;
     WebView webView;
     TextView textView;
-    Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-        startActivity();
-        }
-    };
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +31,13 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+         handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                startActivity();
+            }
+        };
 
         Intent intent = getIntent();
         String artist = intent.getStringExtra("artist");
@@ -67,4 +72,5 @@ public class WebViewActivity extends AppCompatActivity {
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
+
 }
