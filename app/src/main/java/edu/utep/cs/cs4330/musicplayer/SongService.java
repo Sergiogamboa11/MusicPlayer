@@ -3,6 +3,7 @@ package edu.utep.cs.cs4330.musicplayer;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -13,6 +14,7 @@ import java.io.IOException;
 
 public class SongService extends Service {
 
+    PlaybackParams params = new PlaybackParams();
     MediaPlayer mediaPlayer;
 
     public SongService() {
@@ -31,7 +33,11 @@ public class SongService extends Service {
         }
     }
 
-    public void play(int time, String SONG_URI, SeekBar seekBar){
+    public void play(int time, String SONG_URI, SeekBar seekBar, float tempo, float pitch){
+
+        params.setPitch(pitch);
+        params.setSpeed(tempo);
+
         if(mediaPlayer == null){
             mediaPlayer = new MediaPlayer();
             try {
@@ -40,8 +46,11 @@ public class SongService extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mediaPlayer.start();
+
+            mediaPlayer.setPlaybackParams(params);
             mediaPlayer.seekTo(time);
+            mediaPlayer.start();
+
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -54,7 +63,13 @@ public class SongService extends Service {
                 }
             });
         }
-        mediaPlayer.start();
+
+        else {
+
+            mediaPlayer.setPlaybackParams(params);
+            mediaPlayer.seekTo(time);
+            mediaPlayer.start();
+        }
 //        updateSeekBar();
     }
 

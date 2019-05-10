@@ -21,6 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TextView songProgress, songDuration, songName, songArtist, songAlbum;
     MediaPlayer mediaPlayer;
     ImageButton imgPlay, forward, back;
-    SeekBar seekBar;
+    SeekBar seekBar, seekTempo, seekPitch;
     Runnable runnable;
     Handler handler;
     Handler lyricsHandler;
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ViewGroup.LayoutParams lyricParams;
     ViewGroup.LayoutParams lyricsBtnParams;
     WebView webView;
+    float tempo = 1.00f;
+    float pitch = 1.00f;
 
     ConstraintSet set = new ConstraintSet();
     ConstraintLayout lyricsLayout;
@@ -98,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songDuration = findViewById(R.id.tvDuration);
         songProgress = findViewById(R.id.tvProgress);
         seekBar = findViewById(R.id.seekBar);
+        seekTempo = findViewById(R.id.seekBarTempo);
+        seekPitch = findViewById(R.id.seekBarPitch);
         back = findViewById(R.id.btnBack);
         imgPlay = findViewById(R.id.imageButtonPlay);
         forward = findViewById(R.id.btnFwd);
@@ -113,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricParams = lyricsView.getLayoutParams();
         lyricsBtnParams = lyricsButton.getLayoutParams();
         lyricsLayout = (ConstraintLayout) findViewById(R.id.lyricsLayout);
+
+        setUpBars();
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -167,6 +174,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsView.setLayoutParams(lyricParams);
         lyricsView.setVisibility(View.VISIBLE);
         lyricsView.setText(lyrics);
+    }
+
+    public void setUpBars(){
+        seekTempo.setMax(200);
+        seekTempo.setProgress(100);
+        seekPitch.setMax(16);
+        seekPitch.setProgress(8);
+
+        seekTempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
+//                tempo=progress/100;
+                Log.e("seekTempo Change?", tempo + "!");
+                Log.e("seekTempo Change!", (float)progress/100 + "!");
+                tempo = (float) progress/100;
+                play(imgPlay);
+
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        seekPitch.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
+                Log.e("seekTempo Change?", pitch + "!");
+                Log.e("seekTempo Change!", (float)progress/8 + "!");
+                pitch = (float) progress/8;
+                play(imgPlay);
+
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
     }
 
     public void getLyrics(){
@@ -344,7 +396,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void play(View view){
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
         imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
-        songService.play(time, SONG_URI, seekBar);
+
+        songService.play(time, SONG_URI, seekBar, tempo, pitch);
         PLAYING = true;
         updateSeekBar();
         songService.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
