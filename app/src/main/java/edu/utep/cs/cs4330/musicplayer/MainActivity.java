@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 0;
     ImageView albumArt;
-    TextView songProgress, songDuration, songName, songArtist, songAlbum;
+    TextView songProgress, songDuration, songName, songArtist, songAlbum, minTempo, maxTempo, curTempo;
     MediaPlayer mediaPlayer;
     ImageButton imgPlay, forward, back;
     SeekBar seekBar, seekTempo, seekPitch;
@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsButton = findViewById(R.id.lyricsBtn);
         lyricsView = findViewById(R.id.lyricsView);
         webView = findViewById(R.id.webview);
+        minTempo = findViewById(R.id.textViewTempoMin);
+        maxTempo = findViewById(R.id.textViewTempoMax);
+        curTempo = findViewById(R.id.textViewTempoCur);
 
         lyricsView.setVisibility(View.INVISIBLE);
         lyricParams = lyricsView.getLayoutParams();
@@ -177,8 +180,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setUpBars(){
-        seekTempo.setMax(200);
-        seekTempo.setProgress(100);
+        seekTempo.setMax(100);
+        seekTempo.setProgress(50);
         seekPitch.setMax(16);
         seekPitch.setProgress(8);
 
@@ -187,8 +190,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
 //                tempo=progress/100;
                 Log.e("seekTempo Change?", tempo + "!");
-                Log.e("seekTempo Change!", (float)progress/100 + "!");
-                tempo = (float) progress/100;
+                Log.e("seekTempo Change!", (float)progress/100 + 0.5f+ "!");
+                tempo = (float) progress/100f + 0.5f;
+                curTempo.setText((progress +50)+ "%");
                 play(imgPlay);
 
             }
@@ -206,7 +210,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
                 Log.e("seekTempo Change?", pitch + "!");
                 Log.e("seekTempo Change!", (float)progress/8 + "!");
-                pitch = (float) progress/8;
+//                pitch = (float) progress/8;
+                pitch = (float)progress/16f + 0.5f;
                 play(imgPlay);
 
             }

@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class SongService extends Service {
 
-    PlaybackParams params = new PlaybackParams();
+
     MediaPlayer mediaPlayer;
 
     public SongService() {
@@ -35,8 +35,10 @@ public class SongService extends Service {
 
     public void play(int time, String SONG_URI, SeekBar seekBar, float tempo, float pitch){
 
+        PlaybackParams params= new PlaybackParams();
         params.setPitch(pitch);
         params.setSpeed(tempo);
+
 
         if(mediaPlayer == null){
             mediaPlayer = new MediaPlayer();
@@ -65,7 +67,6 @@ public class SongService extends Service {
         }
 
         else {
-
             mediaPlayer.setPlaybackParams(params);
             mediaPlayer.seekTo(time);
             mediaPlayer.start();

@@ -198,6 +198,8 @@
                 android:layout_height="160dp"
                 android:background="#1c1c1c">
 
+
+
                 <TextView
                     android:id="@+id/textViewTempo"
                     android:layout_width="wrap_content"
@@ -247,6 +249,44 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewPitch" />
+
+                <TextView
+                    android:id="@+id/textViewTempoMax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="21dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="+50%"
+                    android:textColor="#fffff0"
+                    app:layout_constraintBottom_toBottomOf="@+id/seekBarTempo"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/seekBarTempo"
+                    app:layout_constraintTop_toTopOf="@+id/seekBarTempo" />
+                <TextView
+                    android:id="@+id/textViewTempoMin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="21dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="-50%"
+                    android:textColor="#fffff0"
+                    app:layout_constraintBottom_toBottomOf="@+id/seekBarTempo"
+                    app:layout_constraintEnd_toStartOf="@+id/seekBarTempo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/seekBarTempo" />
+
+                <TextView
+                    android:id="@+id/textViewTempoCur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="100%"
+                    android:textColor="#fffff0"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/seekBarTempo" />
 
             </android.support.constraint.ConstraintLayout>
 
