@@ -7,6 +7,7 @@ import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 
@@ -35,10 +36,11 @@ public class SongService extends Service {
 
     public void play(int time, String SONG_URI, SeekBar seekBar, float tempo, float pitch){
 
-        PlaybackParams params= new PlaybackParams();
+        stop(); // This stops pitch change crash for some reason
+        PlaybackParams params = new PlaybackParams();
         params.setPitch(pitch);
         params.setSpeed(tempo);
-
+        Log.e("Speed and pitch: ", params.getSpeed() + " " +  params.getPitch());
 
         if(mediaPlayer == null){
             mediaPlayer = new MediaPlayer();
@@ -49,8 +51,8 @@ public class SongService extends Service {
                 e.printStackTrace();
             }
 
-            mediaPlayer.setPlaybackParams(params);
             mediaPlayer.seekTo(time);
+            mediaPlayer.setPlaybackParams(params);
             mediaPlayer.start();
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -67,8 +69,9 @@ public class SongService extends Service {
         }
 
         else {
-            mediaPlayer.setPlaybackParams(params);
+
             mediaPlayer.seekTo(time);
+            mediaPlayer.setPlaybackParams(params);
             mediaPlayer.start();
         }
 //        updateSeekBar();

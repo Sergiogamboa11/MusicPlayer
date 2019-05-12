@@ -189,11 +189,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
 //                tempo=progress/100;
-                Log.e("seekTempo Change?", tempo + "!");
-                Log.e("seekTempo Change!", (float)progress/100 + 0.5f+ "!");
+//                Log.e("seekTempo Change?", tempo + "!");
+//                Log.e("seekTempo Change!", (float)progress/100 + 0.5f+ "!");
                 tempo = (float) progress/100f + 0.5f;
                 curTempo.setText((progress +50)+ "%");
-                play(imgPlay);
+                if(PLAYING)
+                    play(imgPlay);
 
             }
             @Override
@@ -208,11 +209,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         seekPitch.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean progressChanged) {
-                Log.e("seekTempo Change?", pitch + "!");
-                Log.e("seekTempo Change!", (float)progress/8 + "!");
+//                Log.e("seekTempo Change?", pitch + "!");
+//                Log.e("seekTempo Change!", (float)progress/8 + "!");
 //                pitch = (float) progress/8;
                 pitch = (float)progress/16f + 0.5f;
-                play(imgPlay);
+                if(PLAYING)
+                    play(imgPlay);
 
             }
             @Override
