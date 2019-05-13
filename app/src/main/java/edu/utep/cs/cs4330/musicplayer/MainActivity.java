@@ -2,11 +2,14 @@ package edu.utep.cs.cs4330.musicplayer;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.IBinder;
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     WebView webView;
     float tempo = 1.00f;
     float pitch = 1.00f;
+    IntentFilter intentFilter;
+    HeadPhoneReceiver receiver;
 
     ConstraintSet set = new ConstraintSet();
     ConstraintLayout lyricsLayout;
@@ -128,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setUpBars();
 
+        receiver = new HeadPhoneReceiver();
+        intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -153,6 +161,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+
+    private class HeadPhoneReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                pause();
+            }
+        }
+    }
+
+    private void startPlayback() {
+        registerReceiver(receiver, intentFilter);
+    }
+
+    private void stopPlayback() {
+        unregisterReceiver(receiver);
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -284,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else {
             PLAYING = false;
-            pause(imgPlay);
+            pause();
         }
     }
 
@@ -408,6 +435,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void play(){
+        startPlayback();
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
         imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
 
@@ -422,7 +450,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void pause(View view){
+    public void pause(){
+        stopPlayback();
         imgPlay.setBackgroundResource(R.drawable.round_play_circle_outline_24);
         imgPlay.setImageResource(R.mipmap.baseline_play_circle_outline_white_48);
         songService.pause();
