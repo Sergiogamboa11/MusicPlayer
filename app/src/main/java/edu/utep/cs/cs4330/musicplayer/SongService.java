@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.SeekBar;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class SongService extends Service {
 
@@ -44,6 +45,7 @@ public class SongService extends Service {
 
         if(mediaPlayer == null){
             mediaPlayer = new MediaPlayer();
+
             try {
                 mediaPlayer.setDataSource( this, Uri.parse(SONG_URI));
                 mediaPlayer.prepare();
@@ -51,8 +53,21 @@ public class SongService extends Service {
                 e.printStackTrace();
             }
 
-            mediaPlayer.seekTo(time);
             mediaPlayer.setPlaybackParams(params);
+            mediaPlayer.seekTo(time);
+
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t1.run();
+
             mediaPlayer.start();
 
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -69,9 +84,9 @@ public class SongService extends Service {
         }
 
         else {
-
             mediaPlayer.seekTo(time);
             mediaPlayer.setPlaybackParams(params);
+
             mediaPlayer.start();
         }
 //        updateSeekBar();

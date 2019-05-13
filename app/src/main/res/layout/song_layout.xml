@@ -9,6 +9,7 @@
         android:id="@+id/imageView"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        android:background="#202020"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         app:srcCompat="@android:drawable/ic_media_play" />
@@ -16,6 +17,8 @@
     <TextView
         android:id="@+id/textView_artist"
         android:layout_width="327dp"
+        android:textColor="#fffff0"
+        android:background="#202020"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/imageView"
         android:layout_toRightOf="@+id/imageView"
@@ -24,6 +27,8 @@
     <TextView
         android:id="@+id/textView_album"
         android:layout_width="308dp"
+        android:textColor="#fffff0"
+        android:background="#202020"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_artist"
         android:layout_toEndOf="@+id/imageView"
@@ -32,6 +37,8 @@
     <TextView
         android:id="@+id/textView_song"
         android:layout_width="318dp"
+        android:textColor="#fffff0"
+        android:background="#202020"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView_album"
         android:layout_toEndOf="@+id/imageView"

@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static final int PERMISSIONS_EXTERNAL_STORAGE = 0;
     ImageView albumArt;
-    TextView songProgress, songDuration, songName, songArtist, songAlbum, minTempo, maxTempo, curTempo;
+    TextView songProgress, songDuration, songName, songArtist, songAlbum, minTempo, maxTempo, curTempo, minPitch, maxPitch, curPitch;
     MediaPlayer mediaPlayer;
     ImageButton imgPlay, forward, back;
     SeekBar seekBar, seekTempo, seekPitch;
@@ -116,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         minTempo = findViewById(R.id.textViewTempoMin);
         maxTempo = findViewById(R.id.textViewTempoMax);
         curTempo = findViewById(R.id.textViewTempoCur);
+        minPitch = findViewById(R.id.textViewPitchMin);
+        maxPitch = findViewById(R.id.textViewPitchMax);
+        curPitch = findViewById(R.id.textViewPitchCur);
 
         lyricsView.setVisibility(View.INVISIBLE);
         lyricParams = lyricsView.getLayoutParams();
@@ -193,8 +197,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                Log.e("seekTempo Change!", (float)progress/100 + 0.5f+ "!");
                 tempo = (float) progress/100f + 0.5f;
                 curTempo.setText((progress +50)+ "%");
+
                 if(PLAYING)
-                    play(imgPlay);
+                    play();
 
             }
             @Override
@@ -213,8 +218,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                Log.e("seekTempo Change!", (float)progress/8 + "!");
 //                pitch = (float) progress/8;
                 pitch = (float)progress/16f + 0.5f;
+                DecimalFormat format = new DecimalFormat("0.##");
+                curPitch.setText(format.format((progress * 6.25) + 50)+ "%");
                 if(PLAYING)
-                    play(imgPlay);
+                    play();
 
             }
             @Override
@@ -273,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void startClick(View view){
         if(!PLAYING) {
             PLAYING = true;
-            play(imgPlay);
+            play();
         }
         else {
             PLAYING = false;
@@ -322,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         stop();
-                        play(imgPlay);
+                        play();
                     }
                 }, 250);
             }
@@ -400,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    public void play(View view){
+    public void play(){
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
         imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
 
@@ -466,7 +473,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             lyricsView.setLayoutParams(lyricParams);
 
             if(temp)
-                play(view);
+                play();
         }
     }
 
@@ -493,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             lyricsView.setLayoutParams(lyricParams);
 
             if(temp)
-                play(view);
+                play();
         }
     }
 
