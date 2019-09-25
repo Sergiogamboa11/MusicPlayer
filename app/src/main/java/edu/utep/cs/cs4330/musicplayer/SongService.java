@@ -49,12 +49,12 @@ public class SongService extends Service {
             try {
                 mediaPlayer.setDataSource( this, Uri.parse(SONG_URI));
                 mediaPlayer.prepare();
+                mediaPlayer.setPlaybackParams(params);
+                mediaPlayer.seekTo(time);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            mediaPlayer.setPlaybackParams(params);
-            mediaPlayer.seekTo(time);
 
             Thread t1 = new Thread(new Runnable() {
                 @Override
