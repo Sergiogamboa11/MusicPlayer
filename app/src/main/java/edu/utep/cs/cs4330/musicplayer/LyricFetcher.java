@@ -4,6 +4,7 @@ import android.icu.util.RangeValueIterator;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -71,14 +72,22 @@ public class LyricFetcher {
 
     }
 
-    public void handleBrowser( WebView browser, String url, String songArtist, String songName){
 
+    public void handleBrowser(WebView browser, String url, String songArtist, String songName){
+        WebSettings webSettings = browser.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        browser.setWebChromeClient(new WebChromeClient()); //prev webchrome
         browser.setWebViewClient(new WebViewClient(){
-            public boolean shouldOverrideUrlLoading(WebView view, String url)
-            {
-                if(!url.toLowerCase().contains("genius"))
-                {
-//                    browser.setVisibility(View.INVISIBLE);
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                if(url.toLowerCase().contains("genius")){
+
+                    Log.e("Do the first thing: ",url);
+                    return false;
+                }
+                else{
+                    Log.e("Do the other thing: ",url);
+
                     getCode(url);
                     String lyricsURL = "";
                     if(code.equals(""))
@@ -99,21 +108,12 @@ public class LyricFetcher {
                             lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
                         }
                     }
-
-                    return false;
+                    return true;
                 }
-                return true;
             }
         });
-
-
-        WebSettings webSettings = browser.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        browser.setWebChromeClient(new WebChromeClient());
-
         browser.bringToFront();
         browser.loadUrl(url);
-
     }
 
     public String getCode(String url){

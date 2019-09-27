@@ -32,7 +32,7 @@ public class WebViewActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-         handler = new Handler(){
+        handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 startActivity();
@@ -44,6 +44,9 @@ public class WebViewActivity extends AppCompatActivity {
         String song = intent.getStringExtra("song");
         LyricFetcher lyricFetcher = new LyricFetcher();
         String url = lyricFetcher.sendAuthRequest();
+        Log.e("URL", url);
+
+//        lyricFetcher.handleLogin(webView, url, artist, song);
         lyricFetcher.handleBrowser( webView, url, artist, song);
 
         Thread t1 = new Thread(new Runnable() {
