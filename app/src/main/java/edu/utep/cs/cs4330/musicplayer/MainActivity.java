@@ -439,6 +439,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
         imgPlay.setImageResource(R.mipmap.baseline_pause_circle_outline_white_48);
 
+        lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+        lyricsButton.setLayoutParams(lyricsBtnParams);
+
         songService.play(time, SONG_URI, seekBar, tempo, pitch);
         PLAYING = true;
         updateSeekBar();
@@ -520,7 +523,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getCurSongInfo(); // delete this later
             updateDisplay();
 
-            lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+//            lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
+//
+
             lyricsButton.setLayoutParams(lyricsBtnParams);
             lyricsButton.setVisibility(View.VISIBLE);
 

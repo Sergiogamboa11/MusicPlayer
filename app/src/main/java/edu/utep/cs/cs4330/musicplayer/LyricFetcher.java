@@ -72,7 +72,6 @@ public class LyricFetcher {
 
     }
 
-
     public void handleBrowser(WebView browser, String url, String songArtist, String songName){
         WebSettings webSettings = browser.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -81,13 +80,9 @@ public class LyricFetcher {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
                 if(url.toLowerCase().contains("genius")){
-
-                    Log.e("Do the first thing: ",url);
                     return false;
                 }
                 else{
-                    Log.e("Do the other thing: ",url);
-
                     getCode(url);
                     String lyricsURL = "";
                     if(code.equals(""))
@@ -158,7 +153,6 @@ public class LyricFetcher {
             lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
         }
 //        Log.e("Our lyrics", lyrics);
-
     }
 
     public OAuth2AccessToken getToken(String code){

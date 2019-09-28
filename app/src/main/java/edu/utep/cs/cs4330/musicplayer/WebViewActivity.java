@@ -31,24 +31,19 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 startActivity();
             }
         };
-
         Intent intent = getIntent();
         String artist = intent.getStringExtra("artist");
         String song = intent.getStringExtra("song");
         LyricFetcher lyricFetcher = new LyricFetcher();
         String url = lyricFetcher.sendAuthRequest();
-        Log.e("URL", url);
-
-//        lyricFetcher.handleLogin(webView, url, artist, song);
+//        Log.e("URL", url);
         lyricFetcher.handleBrowser( webView, url, artist, song);
-
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -60,11 +55,9 @@ public class WebViewActivity extends AppCompatActivity {
             }
         });
         t1.start();
-
     }
 
     private void startActivity(){
-
         Intent returnIntent = new Intent();
         if(lyrics.equals("-1")){
             returnIntent.putExtra("lyrics","-1"); //User clicked cancel
@@ -78,5 +71,4 @@ public class WebViewActivity extends AppCompatActivity {
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
-
 }

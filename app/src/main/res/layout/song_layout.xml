@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/textView_artist"
-        android:layout_width="327dp"
+        android:layout_width="match_parent"
         android:textColor="#fffff0"
         android:background="#202020"
         android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
 
     <TextView
         android:id="@+id/textView_album"
-        android:layout_width="308dp"
+        android:layout_width="match_parent"
         android:textColor="#fffff0"
         android:background="#202020"
         android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
 
     <TextView
         android:id="@+id/textView_song"
-        android:layout_width="318dp"
+        android:layout_width="match_parent"
         android:textColor="#fffff0"
         android:background="#202020"
         android:layout_height="wrap_content"
