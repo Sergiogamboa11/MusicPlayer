@@ -349,6 +349,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:background="#1a1a1a"
+                    android:onClick="getLyrics"
                     android:text="Search for Lyrics"
                     android:textAllCaps="false"
                     android:textColor="#fffff0"

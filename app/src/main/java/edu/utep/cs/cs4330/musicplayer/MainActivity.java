@@ -139,17 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        lyricsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(WebViewActivity.accessToken==null)
-                    openWebViewActivity();
-                else{
-                    getLyrics();
-                }
-            }
-        });
-
         Intent serviceIntent = new Intent(this, SongService.class);
         bindService(serviceIntent, myConntection, Context.BIND_AUTO_CREATE);
 
@@ -158,8 +147,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(songList==null){
             lyricsButton.setVisibility(View.INVISIBLE);
         }
+    }
 
+    /**
+     * Calls gwtLyrics method if we have an access token
+     * @param view The button that is clicked
+     */
+    public void getLyrics(View view){
+        if(WebViewActivity.accessToken==null)
+            openWebViewActivity();
+        else{
+            getLyrics();
+        }
+    }
 
+    /**
+     * Fetches lyrics on a background thread
+     */
+    public void getLyrics(){
+        final String[] lyrics = {""};
+        lyricsHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                onLyricsReceived(lyrics[0]);
+            }
+        };
+
+        LyricFetcher lyricFetcher = new LyricFetcher();
+        lyricFetcher.lyrics = "";
+        lyricFetcher.saveLyrics(webView, songList.get(CURRENT_POSITION).songArtist, songList.get(CURRENT_POSITION).songName);
+
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(lyricFetcher.lyrics.equals("")){
+
+                }
+                lyrics[0] = lyricFetcher.lyrics;
+                lyricsHandler.sendEmptyMessage(0);
+            }
+        });
+        t1.start();
     }
 
     private class HeadPhoneReceiver extends BroadcastReceiver {
@@ -178,8 +206,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void stopPlayback() {
         unregisterReceiver(receiver);
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -227,7 +253,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if(PLAYING)
                     play();
-
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -262,31 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void getLyrics(){
-        final String[] lyrics = {""};
-       lyricsHandler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                onLyricsReceived(lyrics[0]);
-            }
-        };
 
-        LyricFetcher lyricFetcher = new LyricFetcher();
-        lyricFetcher.lyrics = "";
-        lyricFetcher.saveLyrics(webView, songList.get(CURRENT_POSITION).songArtist, songList.get(CURRENT_POSITION).songName);
-
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(lyricFetcher.lyrics.equals("")){
-
-                }
-                lyrics[0] = lyricFetcher.lyrics;
-                lyricsHandler.sendEmptyMessage(0);
-            }
-        });
-        t1.start();
-    }
 
     public void openWebViewActivity(){
         Intent webViewIntent = new Intent(this, WebViewActivity.class);

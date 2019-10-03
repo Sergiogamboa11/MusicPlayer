@@ -100,7 +100,7 @@ public class LyricFetcher {
                             lyrics = "-2"; //If no URL, err msg
                         }
                         else {
-                            lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL);
+                            lyrics = "\n" + songArtist + "\n" + songName + getLyrics(lyricsURL) + "\n";
                         }
                     }
                     return true;
@@ -242,6 +242,12 @@ public class LyricFetcher {
         return foundURL;
     }
 
+
+    /**
+     * Takes a url and searches for the lyrics in the source html
+     * @param url A string containing the URL where the lyrics will be taken from
+     * @return A string containing the found lyrics
+     */
     public String getLyrics(String url){
         String[] extractedLyrics = {""};
         Thread t1 = new Thread(new Runnable() {
