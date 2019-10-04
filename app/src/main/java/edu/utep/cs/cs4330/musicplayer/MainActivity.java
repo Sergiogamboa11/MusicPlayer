@@ -162,6 +162,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
+     * Opens web view activity and sends song data necessary to find lyrics
+     */
+    public void openWebViewActivity(){
+        Intent webViewIntent = new Intent(this, WebViewActivity.class);
+        webViewIntent.putExtra("artist", songList.get(CURRENT_POSITION).songArtist);
+        webViewIntent.putExtra("song", songList.get(CURRENT_POSITION).songName);
+        startActivityForResult(webViewIntent, 1);
+    }
+
+    /**
      * Fetches lyrics on a background thread
      */
     public void getLyrics(){
@@ -207,6 +217,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         unregisterReceiver(receiver);
     }
 
+    /**
+     * Waits for a Result, and sets up lyrics if received
+     * @param requestCode Who the result comes from
+     * @param resultCode Result returned by child (whoever called setResult)
+     * @param data The data that was sent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
@@ -220,6 +236,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Sets up the received lyrics on UI
+     * @param lyrics The lyrics to be displayed
+     */
     public void onLyricsReceived(String lyrics){
         set.clone(lyricsLayout);
         set.clear(R.id.lyricsView, ConstraintSet.TOP);
@@ -236,6 +256,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lyricsView.setText(lyrics);
     }
 
+    /**
+     * Sets up seek bars and their corresponding listeners
+     */
     public void setUpBars(){
         seekTempo.setMax(100);
         seekTempo.setProgress(50);
@@ -274,7 +297,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 curPitch.setText(format.format((progress * 6.25) + 50)+ "%");
                 if(PLAYING)
                     play();
-
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -287,15 +309,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
-
-    public void openWebViewActivity(){
-        Intent webViewIntent = new Intent(this, WebViewActivity.class);
-        webViewIntent.putExtra("artist", songList.get(CURRENT_POSITION).songArtist);
-        webViewIntent.putExtra("song", songList.get(CURRENT_POSITION).songName);
-        startActivityForResult(webViewIntent, 1);
-    }
-
+    /**
+     * Unbinds mediaplayer service
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -305,6 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Calls method to play music is music is not playing, and calls pause method otherwise
+     */
     public void startClick(View view){
         if(!PLAYING) {
             PLAYING = true;
@@ -314,14 +333,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             PLAYING = false;
             pause();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(toggle.onOptionsItemSelected(item)){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -406,7 +417,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Activates buttons, gets info for the current song
      */
     public void performActions(){
-        imgPlay.setOnClickListener(this::startClick);
         back.setOnClickListener(this::skipBack);
         forward.setOnClickListener(this::skipForward);
 
@@ -434,7 +444,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-
+    /**
+     * Starts music playback, changes button image, sets up onCompletionListener
+     */
     public void play(){
         startPlayback();
         imgPlay.setBackgroundResource(R.drawable.round_pause_circle_outline_24);
@@ -454,6 +466,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    /**
+     * Pauses music playback, changes button image
+     */
     public void pause(){
         stopPlayback();
         imgPlay.setBackgroundResource(R.drawable.round_play_circle_outline_24);
@@ -462,6 +477,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PLAYING = false;
     }
 
+    /**
+     * Stops music playback, resets song progress and UI
+     */
     public void stop(){
         songService.stop();
         PLAYING = false;
@@ -470,6 +488,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         songProgress.setText("00:00");
     }
 
+    /**
+     * Releases media player
+     */
     public void release(){
         if(mediaPlayer != null){
             mediaPlayer.release();
@@ -477,12 +498,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * calls method to release media player
+     */
     @Override
     protected void onStop() {
         super.onStop();
         release();
     }
 
+    /**
+     * Skips current track if more songs are available
+     * @param view The button that is clicked
+     */
     public void skipForward(View view){
         if(songList!=null && CURRENT_POSITION != -1){
             if(CURRENT_POSITION == songList.size()-1){
@@ -510,6 +538,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Goes back on track if it is available
+     * @param view The button that is clicked
+     */
     public void skipBack(View view){
         if(songList!=null && CURRENT_POSITION!=-1){
             if(CURRENT_POSITION == 0){
@@ -523,10 +555,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             SONG_DURATION = songList.get(CURRENT_POSITION).songLength;
             getCurSongInfo(); // delete this later
             updateDisplay();
-
 //            lyricsBtnParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;;
-//
-
             lyricsButton.setLayoutParams(lyricsBtnParams);
             lyricsButton.setVisibility(View.VISIBLE);
 
@@ -539,6 +568,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Updates the song progress seekbar, updates song if seekbar is moved
+     */
     private void updateSeekBar() {
         if (songService.mediaPlayer != null) {
             seekBar.setProgress(songService.mediaPlayer.getCurrentPosition());
@@ -557,6 +589,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Takes a number in millis, converts it to minutes and seconds, updates the specified UI with converted time
+     * @param view The view that will be updated
+     * @param time The time in millis
+     */
     private void setTime(TextView view, int time){
         String update = String.format(Locale.US, "%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(time),
@@ -566,6 +603,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         view.setText(update);
     }
 
+    /**
+     * Requests user for permission to read external storage
+     */
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Toast.makeText(this, "Please allow Storage Permissions in App Setitngs", Toast.LENGTH_SHORT).show();
@@ -577,6 +617,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(toggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
