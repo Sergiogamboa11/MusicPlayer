@@ -111,6 +111,7 @@ public class LyricFetcher {
         browser.loadUrl(url);
     }
 
+
     public String getCode(String url){
         URL authURL;
 
@@ -155,8 +156,12 @@ public class LyricFetcher {
 //        Log.e("Our lyrics", lyrics);
     }
 
+    /**
+     * This method uses
+     * @param code The code that will be used to get an access token
+     * @return An access token
+     */
     public OAuth2AccessToken getToken(String code){
-
             Thread t1 = new Thread(new Runnable() {
                 public void run() {
                     try {
@@ -183,16 +188,26 @@ public class LyricFetcher {
                 }
             }
             return accessToken;
-
     }
 
+    /**
+     * This method forms a URL to make a search query on the genius API
+     * @param browser The webview that is to be used
+     * @param query The query rhat will be input to Genius search API
+     * @return The url that we formed
+     */
     public String makeQuery(WebView browser, String query){
         String url = "https://api.genius.com/search?q=" + query + "&access_token=" + accessToken.getAccessToken();
-        Log.e("Query made: ", url);
-        browser.loadUrl(url);
         return url;
     }
 
+    /**
+     * This method searches for a song URL using the Genius API and returns it as a string if found
+     * @param title The title of the song
+     * @param artist The artist of the song
+     * @param inURL The url for the serch
+     * @return A string containing the URL of the song
+     */
     public String findSong(String title, String artist, String inURL){
 
         URL url = null;
