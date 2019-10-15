@@ -72,13 +72,20 @@ public class LyricFetcher {
 
     }
 
+    /**
+     * Sets up webView and shouldOverrideUrlLoading listener to check if user stays within the websites allowed
+     * Queries and saves lyrics once user accepts permissions
+     * @param browser The browser that will be used
+     * @param url The url
+     * @param songArtist The name of the song's artist
+     * @param songName The song's name
+     */
     public void handleBrowser(WebView browser, String url, String songArtist, String songName){
         WebSettings webSettings = browser.getSettings();
         webSettings.setJavaScriptEnabled(true);
         browser.setWebChromeClient(new WebChromeClient()); //prev webchrome
         browser.setWebViewClient(new WebViewClient(){
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-
                 if(url.toLowerCase().contains("genius")){
                     return false;
                 }
@@ -111,10 +118,13 @@ public class LyricFetcher {
         browser.loadUrl(url);
     }
 
-
+    /**
+     * Retrieves code from the url specified
+     * @param url The URL
+     * @return The code that was found
+     */
     public String getCode(String url){
         URL authURL;
-
         try {
             authURL = new URL(url);
         }
@@ -141,6 +151,13 @@ public class LyricFetcher {
         return code;
     }
 
+    /**
+     * Uses artist name, song name, and a browser, to make a query, find a song, and save it
+     * If no song is found, the string will be set to "No lyrics found for this song"
+     * @param browser The browser we will use
+     * @param songArtist The artist of the Song
+     * @param songName The name of the song
+     */
     public void saveLyrics(WebView browser, String songArtist, String songName){
         accessToken = WebViewActivity.accessToken;
         artist = songArtist.replace(" ", "_");

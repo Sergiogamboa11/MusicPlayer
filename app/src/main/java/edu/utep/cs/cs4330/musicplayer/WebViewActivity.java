@@ -28,6 +28,9 @@ public class WebViewActivity extends AppCompatActivity {
         webView = findViewById(R.id.webview);
     }
 
+    /**
+     * On start of activity it receives data from previous activity and calls lyricFetcher on a separate thread
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -57,6 +60,9 @@ public class WebViewActivity extends AppCompatActivity {
         t1.start();
     }
 
+    /**
+     * On result from lyricFetcher, launches MainActivity and sends data and a code
+     */
     private void startActivity(){
         Intent returnIntent = new Intent();
         if(lyrics.equals("-1")){
